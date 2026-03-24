@@ -3,146 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS_CRASHER v2.0 | hanzX Official</title>
+    <title>NEXUS_CRASHER V3.1 | hanzX</title>
     <style>
-        :root { --bg: #090206; --panel: #160410; --neon: #cc0033; --text: #ffffff; }
-        body { background-color: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding-bottom: 80px; }
-        .card { background: var(--panel); margin: 15px; padding: 20px; border-radius: 15px; border: 1px solid var(--neon); box-shadow: 0 0 10px rgba(204, 0, 51, 0.5); }
-        input, select { width: 100%; padding: 12px; margin: 10px 0; background: #250a1f; border: 1px solid var(--neon); border-radius: 8px; color: white; box-sizing: border-box; outline: none; }
-        .btn-main { width: 100%; padding: 15px; background: linear-gradient(45deg, #cc0033, #800000); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 100%; }
+        :root { --bg: #050103; --neon: #ff0055; --glow: rgba(255, 0, 85, 0.6); --glass: rgba(20, 5, 12, 0.9); }
+        body { background-color: var(--bg); color: #fff; font-family: 'Share Tech Mono', monospace; margin: 0; overflow-x: hidden; }
+        
+        /* LOADING SCREEN */
+        #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .scanline { width: 100%; height: 2px; background: var(--neon); position: absolute; top: 0; animation: scan 2s linear infinite; box-shadow: 0 0 15px var(--neon); }
+        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+        .load-text { color: var(--neon); font-size: 1.2rem; text-shadow: 0 0 10px var(--neon); margin-bottom: 10px; }
+        .progress-bar { width: 250px; height: 10px; border: 1px solid var(--neon); border-radius: 5px; overflow: hidden; }
+        .progress-fill { width: 0%; height: 100%; background: var(--neon); box-shadow: 0 0 10px var(--neon); transition: 0.1s; }
+
+        /* UI CORE */
+        .bg-animate { position: fixed; top:0; left:0; width:100%; height:100%; z-index:-1; background: radial-gradient(circle at 50% 50%, #1a0510, #050103); }
+        .card { background: var(--glass); margin: 15px; padding: 20px; border-radius: 15px; border: 1px solid var(--neon); box-shadow: 0 0 20px var(--glow); backdrop-filter: blur(10px); }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; background: rgba(0,0,0,0.5); border: 1px solid var(--neon); border-radius: 8px; color: #00ffcc; outline: none; box-sizing: border-box; }
+        .btn-main { width: 100%; padding: 15px; background: linear-gradient(45deg, var(--neon), #80002b); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; transition: 0.3s; }
+        .nav-bottom { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid var(--neon); }
+        .nav-item { color: #555; font-size: 0.7rem; cursor: pointer; text-align: center; }
+        .active { color: var(--neon); text-shadow: 0 0 10px var(--neon); font-weight: bold; }
         .hidden { display: none !important; }
-        .sidebar { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: var(--panel); border-left: 2px solid var(--neon); transition: 0.3s; z-index: 1000; padding: 20px; box-sizing: border-box; overflow-y: auto; }
-        .sidebar.active { right: 0; }
-        .badge { padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; background: #cc0033; color: white; }
+        .user-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #333; font-size: 0.8rem; }
+        .badge { font-size: 0.6rem; padding: 2px 5px; border-radius: 4px; font-weight: bold; margin-left: 5px; }
+        .HIGH-OWNER { background: #00ffff; color: #000; }
+        .OWNER { background: #ff00ff; color: #fff; }
+        .MEMBER { background: #00ff00; color: #000; }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <div id="login-screen" style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-        <h1 style="color: var(--neon); text-shadow: 0 0 20px var(--neon); font-size: 1.8rem;">NEXUS_CRASHER</h1>
-        <div class="card" style="width: 85%;">
-            <input type="text" id="u" placeholder="Username...">
-            <input type="password" id="p" placeholder="Password...">
-            <button class="btn-main" onclick="handleLogin()">AUTHENTICATE</button>
-            <p id="msg" style="color: red; text-align: center; font-size: 0.8rem; margin-top: 10px;"></p>
+    <div id="loader">
+        <div class="scanline"></div>
+        <div class="load-text" id="load-info">INITIALIZING NEXUS_V3...</div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="p-fill"></div>
         </div>
+        <p style="font-size: 0.6rem; color: #555; margin-top: 15px;">BY: hanzX x arelxiter</p>
+    </div>
+
+    <audio id="nexus-bgm" loop>
+        <source src="https://files.catbox.moe/k3v8z0.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="bg-animate"></div>
+
+    <div id="login-screen" style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;" class="hidden">
+        <h1 style="color: var(--neon); text-shadow: 0 0 25px var(--neon); letter-spacing: 5px;">NEXUS_V3</h1>
+        <div class="card" style="width: 85%;">
+            <input type="text" id="u" placeholder="USERNAME">
+            <input type="password" id="p" placeholder="PASSWORD">
+            <button class="btn-main" onclick="handleLogin()">AUTHENTICATE</button>
+            <p id="msg" style="color: yellow; text-align: center; font-size: 0.8rem; margin-top: 10px;"></p>
+        </div>
+        <button onclick="startMusic()" style="background:none; border:none; color:var(--neon); font-size:0.6rem; cursor:pointer;">[ 🎵 Click to play audio ]</button>
     </div>
 
     <div id="app" class="hidden">
-        <header style="padding: 15px; border-bottom: 1px solid var(--neon); display: flex; justify-content: space-between; align-items: center; background: #11020a;">
-            <span style="color: var(--neon); font-weight: bold;">[ NEXUS_V2 ]</span>
-            <span style="font-size: 1.5rem; cursor: pointer; color: var(--neon);" id="admin-trigger" class="hidden" onclick="toggleSidebar()">☰</span>
+        <header style="padding: 15px; background: rgba(0,0,0,0.8); border-bottom: 1px solid var(--neon); display: flex; justify-content: space-between; align-items: center;">
+            <span style="color: var(--neon); font-weight: bold;">NEXUS SYSTEM v3.1</span>
+            <span id="server-toggle" style="color:#00ff00; font-size: 0.7rem; border:1px solid #00ff00; padding:2px 5px; border-radius:5px;">ONLINE</span>
         </header>
 
         <div id="p-home" class="page">
             <div class="card">
-                <h3 style="margin-top:0;">DASHBOARD</h3>
-                <p>User: <b id="disp-u" style="color: #00ffff;"></b></p>
-                <p>Role: <span id="disp-r" class="badge"></span></p>
-                <p>Status: <span id="disp-e" style="color: yellow;"></span></p>
+                <h3>VIRTEX TERMINAL</h3>
+                <input type="number" id="target" placeholder="TARGET (628xxx)">
+                <select id="bug-type">
+                    <option value="fx4">FX4CRASHER FORCLOSE (V6)</option>
+                    <option value="ui">CRASH UI SYSTEM</option>
+                    <option value="blank">BLANK CLICK STUCK</option>
+                </select>
+                <button class="btn-main" onclick="sendBug()">➤ DEPLOY ATTACK</button>
             </div>
-            <div class="card" style="padding:0; overflow:hidden;"><img src="https://i.ibb.co/6YfM0Xm/anime-dark.jpg" style="width:100%;"></div>
+            <div class="card">
+                <p style="font-size: 0.7rem;">Logged in as: <b id="disp-u"></b> (<span id="disp-r"></span>)</p>
+                <p style="font-size: 0.7rem; color: yellow;">Status: <span id="disp-e"></span></p>
+            </div>
         </div>
 
-        <div id="sidebar" class="sidebar">
-            <h3 style="color: var(--neon); margin-top:0;">ADMIN PANEL</h3>
-            <p style="font-size:0.7rem; color:gray;">Create cloud-based accounts</p>
-            <hr border="1" color="#cc0033" style="margin-bottom:15px;">
-            
-            <label>Username:</label>
-            <input type="text" id="nu" placeholder="New Username">
-            
-            <label>Password:</label>
-            <input type="password" id="np" placeholder="New Password">
-            
-            <label>Role Access:</label>
-            <select id="nr">
-                <option value="MEMBER">MEMBER</option>
-                <option value="OWNER">OWNER</option>
-                <option value="HIGH OWNER">HIGH OWNER</option>
-            </select>
-            
-            <label>Duration (Days):</label>
-            <input type="number" id="nd" placeholder="Ex: 30" value="7">
-            
-            <button class="btn-main" onclick="createUser()">DEPLOY ACCOUNT</button>
-            <button class="btn-main" style="background:#444; margin-top:10px;" onclick="toggleSidebar()">CLOSE PANEL</button>
+        <div id="p-admin" class="page hidden">
+            <div class="card">
+                <h3>CLOUD DEPLOYMENT</h3>
+                <input type="text" id="nu" placeholder="New Username">
+                <input type="password" id="np" placeholder="New Password">
+                <select id="nr"></select>
+                <input type="number" id="nd" placeholder="Days" value="7">
+                <button class="btn-main" onclick="createUser()">DEPLOY TO CLOUD</button>
+            </div>
+            <div class="card">
+                <h4>ACTIVE USER LIST</h4>
+                <div id="user-list">Fetching...</div>
+            </div>
         </div>
+
+        <nav class="nav-bottom">
+            <div class="nav-item active" onclick="tab('home')">HOME</div>
+            <div id="nav-adm" class="nav-item hidden" onclick="tab('admin')">ADMIN</div>
+        </nav>
     </div>
 
     <script>
-        // LINK DATABASE FIREBASE LU MPROY!
         const BASE_URL = "https://nexuscrasher-default-rtdb.asia-southeast1.firebasedatabase.app/users";
+        let myRole = "";
+
+        // LOADING LOGIC
+        window.addEventListener('load', () => {
+            let prog = 0;
+            const fill = document.getElementById('p-fill');
+            const info = document.getElementById('load-info');
+            
+            const interval = setInterval(() => {
+                prog += Math.floor(Math.random() * 10) + 1;
+                if (prog >= 100) {
+                    prog = 100;
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        document.getElementById('loader').style.display = 'none';
+                        document.getElementById('login-screen').classList.remove('hidden');
+                    }, 500);
+                }
+                fill.style.width = prog + '%';
+                if(prog > 30) info.innerText = "BYPASSING SECURITY...";
+                if(prog > 60) info.innerText = "CONNECTING FIREBASE...";
+                if(prog > 90) info.innerText = "WELCOME hanzX!";
+            }, 100);
+        });
+
+        function startMusic() { document.getElementById('nexus-bgm').play(); }
 
         async function handleLogin() {
-            const user = document.getElementById('u').value.trim();
-            const pass = document.getElementById('p').value.trim();
+            startMusic(); // Coba play pas login
+            const u = document.getElementById('u').value.trim();
+            const p = document.getElementById('p').value.trim();
             const msg = document.getElementById('msg');
-
-            // 1. CEK HARDCODE ADMIN (LU SENDIRI)
-            if (user === "hanzX" && pass === "rehanganteng") {
-                showApp(user, "ADMIN", "PERMANENT", true);
-                return;
-            }
-
-            // 2. CEK DATABASE CLOUD (UNTUK MEMBER)
-            msg.innerText = "Authenticating...";
+            if (u === "hanzX" && p === "rehanganteng") { loginSuccess(u, "HIGH-OWNER", "PERMANENT"); return; }
             try {
-                const res = await fetch(`${BASE_URL}/${user}.json`);
+                const res = await fetch(`${BASE_URL}/${u}.json`);
                 const data = await res.json();
-                
-                if (data && data.p === pass) {
-                    const now = new Date().getTime();
-                    if (now > data.exp) {
-                        msg.innerText = "Akun Sudah Expired mpray! 💀";
-                    } else {
-                        const dateExp = new Date(data.exp).toLocaleDateString();
-                        showApp(user, data.r, `Valid until ${dateExp}`, false);
-                    }
-                } else {
-                    msg.innerText = "Username/Password Salah mpray!";
-                }
-            } catch (e) { 
-                msg.innerText = "Database Error! Cek Rules Firebase lu cok!"; 
-            }
+                if (data && data.p === p) {
+                    if (new Date().getTime() > data.exp) { msg.innerText = "ACCOUNT EXPIRED!"; }
+                    else { loginSuccess(u, data.r, new Date(data.exp).toLocaleDateString()); }
+                } else { msg.innerText = "WRONG CREDENTIALS!"; }
+            } catch (e) { msg.innerText = "DB ERROR!"; }
         }
 
-        function showApp(u, r, e, isAdmin) {
+        function loginSuccess(u, r, e) {
+            myRole = r;
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('app').classList.remove('hidden');
             document.getElementById('disp-u').innerText = u;
             document.getElementById('disp-r').innerText = r;
             document.getElementById('disp-e').innerText = e;
-            if (isAdmin) document.getElementById('admin-trigger').classList.remove('hidden');
+            const admBtn = document.getElementById('nav-adm');
+            const roleSelect = document.getElementById('nr');
+            if (r === "HIGH-OWNER") {
+                admBtn.classList.remove('hidden');
+                roleSelect.innerHTML = `<option value="MEMBER">MEMBER</option><option value="OWNER">OWNER</option><option value="HIGH-OWNER">HIGH-OWNER</option>`;
+            } else if (r === "OWNER") {
+                admBtn.classList.remove('hidden');
+                roleSelect.innerHTML = `<option value="MEMBER">MEMBER</option>`;
+            }
+            renderList();
         }
 
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
+        async function renderList() {
+            const listDiv = document.getElementById('user-list');
+            try {
+                const res = await fetch(`${BASE_URL}.json`);
+                const data = await res.json();
+                let html = "";
+                for (let key in data) {
+                    const u = data[key];
+                    let delBtn = (myRole === "HIGH-OWNER" || (myRole === "OWNER" && u.r === "MEMBER")) ? 
+                        `<button onclick="deleteUser('${key}')" style="color:red; background:none; border:1px solid red; font-size:0.6rem;">DEL</button>` : "";
+                    html += `<div class="user-item"><span><b>${key}</b> <span class="badge ${u.r}">${u.r}</span></span> ${delBtn}</div>`;
+                }
+                listDiv.innerHTML = html || "Empty.";
+            } catch (e) { listDiv.innerHTML = "Error."; }
+        }
 
         async function createUser() {
             const u = document.getElementById('nu').value.trim();
             const p = document.getElementById('np').value.trim();
             const r = document.getElementById('nr').value;
             const d = document.getElementById('nd').value;
+            const expTime = new Date().getTime() + (d * 24 * 60 * 60 * 1000);
+            await fetch(`${BASE_URL}/${u}.json`, { method: 'PUT', body: JSON.stringify({ p: p, r: r, exp: expTime }) });
+            alert("DEPLOYED!"); renderList();
+        }
 
-            if (!u || !p || !d) return alert("Data harus lengkap cok!");
+        async function deleteUser(user) {
+            if (confirm(`Hapus ${user}?`)) { await fetch(`${BASE_URL}/${user}.json`, { method: 'DELETE' }); renderList(); }
+        }
 
-            // Hitung Waktu Expired (Hari ke Milidetik)
-            const expTime = new Date().getTime() + (parseInt(d) * 24 * 60 * 60 * 1000);
+        function tab(n) {
+            document.querySelectorAll('.page').forEach(x => x.classList.add('hidden'));
+            document.getElementById('p-' + n).classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+        }
 
-            try {
-                const res = await fetch(`${BASE_URL}/${u}.json`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ p: p, r: r, exp: expTime })
-                });
-
-                if(res.ok) {
-                    alert(`SUKSES! Akun ${u} aktif ${d} hari. Sekarang bisa login di HP mana aja!`);
-                    toggleSidebar();
-                }
-            } catch (e) {
-                alert("Gagal koneksi ke Firebase mpray!");
-            }
+        function sendBug() {
+            const t = document.getElementById('target').value;
+            if(!t) return alert("Target?");
+            window.location.href = `https://api.whatsapp.com/send?phone=${t}&text=NEXUS_V3_INJECTED`;
         }
     </script>
 </body>
