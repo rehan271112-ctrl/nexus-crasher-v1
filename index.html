@@ -3,20 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS_CRASHER V3.6 | hanzX</title>
+    <title>NEXUS_CRASHER V3.7 | hanzX</title>
     <style>
         :root { --bg: #050103; --neon: #ff0055; --glow: rgba(255, 0, 85, 0.6); --glass: rgba(20, 5, 12, 0.9); }
         body { background-color: var(--bg); color: #fff; font-family: 'Share Tech Mono', monospace; margin: 0; overflow-x: hidden; }
+        
         #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .progress-bar { width: 250px; height: 10px; border: 1px solid var(--neon); border-radius: 5px; overflow: hidden; }
         .progress-fill { width: 0%; height: 100%; background: var(--neon); transition: 0.05s; }
+
         .card { background: var(--glass); margin: 15px; padding: 20px; border-radius: 15px; border: 1px solid var(--neon); box-shadow: 0 0 20px var(--glow); backdrop-filter: blur(10px); }
         input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; background: rgba(0,0,0,0.5); border: 1px solid var(--neon); border-radius: 8px; color: #00ffcc; outline: none; box-sizing: border-box; font-family: 'Share Tech Mono', monospace; }
         textarea { height: 120px; resize: none; }
+        
         .btn-main { width: 100%; padding: 15px; background: linear-gradient(45deg, var(--neon), #80002b); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-        .nav-bottom { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid var(--neon); }
+        .btn-del { background: #ff0000; color: #fff; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 0.6rem; }
+
+        .nav-bottom { position: fixed; bottom: 0; width: 100%; background: #000; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid var(--neon); z-index: 100; }
         .nav-item { color: #444; font-size: 0.7rem; cursor: pointer; text-align: center; }
         .active { color: var(--neon); text-shadow: 0 0 10px var(--neon); font-weight: bold; }
+        
+        .user-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #333; font-size: 0.7rem; }
+        .user-info b { color: #00ffcc; }
+        .user-info i { color: #ffaa00; font-style: normal; }
         .hidden { display: none !important; }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -24,7 +33,7 @@
 <body>
 
     <div id="loader">
-        <div style="color:var(--neon); margin-bottom:10px;">BYPASSING BLOCKER...</div>
+        <div style="color:var(--neon); margin-bottom:10px;">SUPREMACY BOOTING...</div>
         <div class="progress-bar"><div class="progress-fill" id="p-fill"></div></div>
     </div>
 
@@ -33,38 +42,42 @@
     </audio>
 
     <div id="login-screen" style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;" class="hidden">
-        <h1 style="color: var(--neon); text-shadow: 0 0 25px var(--neon);">NEXUS_V3.6</h1>
+        <h1 style="color: var(--neon); text-shadow: 0 0 25px var(--neon);">NEXUS_V3.7</h1>
         <div class="card" style="width: 85%;">
             <input type="text" id="u" placeholder="USERNAME">
             <input type="password" id="p" placeholder="PASSWORD">
             <button class="btn-main" onclick="handleLogin()">AUTHENTICATE</button>
+            <p id="msg" style="color: yellow; text-align: center; font-size: 0.8rem; margin-top: 10px;"></p>
         </div>
     </div>
 
     <div id="app" class="hidden">
         <header style="padding: 15px; border-bottom: 1px solid var(--neon); display: flex; justify-content: space-between;">
-            <span id="secret-trigger" style="color: var(--neon); font-weight: bold; cursor: pointer;">NEXUS hanzX v3.6</span>
-            <span style="color:#00ff00; font-size: 0.7rem;">READY</span>
+            <span id="secret-trigger" style="color: var(--neon); font-weight: bold; cursor: pointer;">NEXUS hanzX v3.7</span>
+            <span style="color:#00ff00; font-size: 0.7rem; border:1px solid #00ff00; padding:2px 5px; border-radius:5px;">ONLINE</span>
         </header>
 
         <div id="p-home" class="page">
             <div class="card">
-                <h3>TERMINAL</h3>
-                <input type="number" id="target" placeholder="628xxxx">
-                <textarea id="custom-virtex" placeholder="Paste Amunisi Virtex Lu Di Sini..."></textarea>
-                <button class="btn-main" onclick="sendBug()">➤ DEPLOY (x20)</button>
+                <h3>VIRTEX TERMINAL</h3>
+                <input type="number" id="target" placeholder="TARGET (628xxx)">
+                <textarea id="custom-virtex" placeholder="Paste Teks Amunisi Lu Di Sini..."></textarea>
+                <button class="btn-main" onclick="sendBug()">➤ DEPLOY ATTACK (x20)</button>
             </div>
         </div>
 
         <div id="p-admin" class="page hidden">
             <div class="card">
-                <h3>ADMIN</h3>
-                <input type="text" id="nu" placeholder="User">
-                <input type="password" id="np" placeholder="Pass">
+                <h3>CREATE USER</h3>
+                <input type="text" id="nu" placeholder="New Username">
+                <input type="password" id="np" placeholder="New Password">
                 <select id="nr"><option value="MEMBER">MEMBER</option><option value="OWNER">OWNER</option></select>
                 <button class="btn-main" onclick="createUser()">DEPLOY</button>
             </div>
-            <div class="card" id="user-list"></div>
+            <div class="card">
+                <h4>USER DATABASE</h4>
+                <div id="user-list">Fetching...</div>
+            </div>
         </div>
 
         <nav class="nav-bottom">
@@ -95,7 +108,7 @@
             clickCount++;
             if(clickCount >= 5) {
                 document.getElementById('nav-adm').classList.remove('hidden');
-                alert("ADMIN UNLOCKED!");
+                alert("ADMIN PANEL UNLOCKED!");
                 clickCount = 0;
             }
         };
@@ -105,9 +118,13 @@
             const u = document.getElementById('u').value.trim();
             const p = document.getElementById('p').value.trim();
             if (u === "hanzX" && p === "rehanganteng") { loginSuccess(); return; }
-            const res = await fetch(`${BASE_URL}/${u}.json`);
-            const data = await res.json();
-            if (data && data.p === p) loginSuccess();
+            
+            try {
+                const res = await fetch(`${BASE_URL}/${u}.json`);
+                const data = await res.json();
+                if (data && data.p === p) loginSuccess();
+                else document.getElementById('msg').innerText = "ACCESS DENIED!";
+            } catch (e) { document.getElementById('msg').innerText = "DB ERROR!"; }
         }
 
         function loginSuccess() {
@@ -120,35 +137,52 @@
             const listDiv = document.getElementById('user-list');
             const res = await fetch(`${BASE_URL}.json`);
             const data = await res.json();
-            let html = "<h4>USER LIST</h4>";
-            for (let key in data) if(key !== "hanzX") html += `<div style="font-size:0.7rem;">${key} [${data[key].r}]</div>`;
-            listDiv.innerHTML = html;
+            let html = "";
+            for (let key in data) {
+                // Sembunyikan admin utama hanzX biar ga bisa dihapus/dilihat
+                if(key !== "hanzX") {
+                    html += `
+                    <div class="user-item">
+                        <div class="user-info">
+                            <b>${key}</b> [${data[key].r}]<br>
+                            <i>PW: ${data[key].p}</i>
+                        </div>
+                        <button class="btn-del" onclick="deleteUser('${key}')">DELETE</button>
+                    </div>`;
+                }
+            }
+            listDiv.innerHTML = html || "No Users.";
         }
 
         async function createUser() {
             const u = document.getElementById('nu').value.trim();
             const p = document.getElementById('np').value.trim();
             const r = document.getElementById('nr').value;
+            if(!u || !p) return alert("Isi data dulu!");
             await fetch(`${BASE_URL}/${u}.json`, { method: 'PUT', body: JSON.stringify({ p, r, exp: 9999999999999 }) });
-            alert("SUCCESS!"); renderList();
+            alert("USER DEPLOYED!"); renderList();
+        }
+
+        async function deleteUser(user) {
+            if(confirm(`Hapus akun ${user}?`)) {
+                await fetch(`${BASE_URL}/${user}.json`, { method: 'DELETE' });
+                alert("DELETED!"); renderList();
+            }
         }
 
         function tab(n) {
             document.querySelectorAll('.page').forEach(x => x.classList.add('hidden'));
             document.getElementById('p-' + n).classList.remove('hidden');
+            document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+            event.currentTarget.classList.add('active');
         }
 
         function sendBug() {
             const t = document.getElementById('target').value;
             const ammo = document.getElementById('custom-virtex').value;
-            if(!t || !ammo) return alert("DATA KOSONG!");
-
-            // GANTI LOGIK BIAR KAGA BLOCKED
+            if(!t || !ammo) return alert("Lengkapi data!");
             const payload = (ammo + "\n").repeat(20);
-            const waUrl = `whatsapp://send?phone=${t}&text=${encodeURIComponent(payload)}`;
-            
-            // PAKSA BUKA LANGSUNG KE APLIKASI, BUKAN TAB BARU
-            window.location.href = waUrl;
+            window.location.href = `whatsapp://send?phone=${t}&text=${encodeURIComponent(payload)}`;
         }
     </script>
 </body>
